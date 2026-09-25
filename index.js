@@ -5,6 +5,7 @@
 // ============================================================
 
 import 'dotenv/config';
+import http from 'node:http';
 
 import {
   Client,
@@ -117,32 +118,109 @@ const CLIENT_ID =
   (process.env.CLIENT_ID || '').trim();
 
 // ============================================================
+// RENDER HEALTH SERVER
+//
+// This allows the bot to run as a Render Web Service while
+// still providing an HTTP port for Render to detect.
+// ============================================================
+
+const RENDER_PORT =
+  Number(process.env.PORT) || 10000;
+
+const healthServer =
+  http.createServer((req, res) => {
+
+    res.writeHead(200, {
+      'Content-Type':
+        'text/plain; charset=utf-8'
+    });
+
+    res.end(
+      `${BOT_NAME} is online.\n`
+    );
+
+  });
+
+healthServer.listen(
+  RENDER_PORT,
+  '0.0.0.0',
+  () => {
+
+    console.log(
+      '=================================================='
+    );
+
+    console.log(
+      `Render health server listening on port ${RENDER_PORT}`
+    );
+
+    console.log(
+      '=================================================='
+    );
+
+  }
+);
+
+healthServer.on(
+  'error',
+  error => {
+
+    console.error(
+      'Render health server error:',
+      error
+    );
+
+  }
+);
+
+// ============================================================
 // ENVIRONMENT VALIDATION
 // ============================================================
 
 function validateEnvironment() {
-  console.log('Environment check...');
+
+  console.log(
+    'Environment check...'
+  );
 
   if (!BOT_TOKEN) {
-    console.error('❌ BOT_TOKEN is missing.');
+
+    console.error(
+      '❌ BOT_TOKEN is missing.'
+    );
+
     console.error(
       'Add BOT_TOKEN to Render → Environment.'
     );
+
     return false;
+
   }
 
   if (!CLIENT_ID) {
-    console.error('❌ CLIENT_ID is missing.');
+
+    console.error(
+      '❌ CLIENT_ID is missing.'
+    );
+
     console.error(
       'Add CLIENT_ID to Render → Environment.'
     );
+
     return false;
+
   }
 
-  console.log('✓ BOT_TOKEN is present.');
-  console.log(`✓ CLIENT_ID: ${CLIENT_ID}`);
+  console.log(
+    '✓ BOT_TOKEN is present.'
+  );
+
+  console.log(
+    `✓ CLIENT_ID: ${CLIENT_ID}`
+  );
 
   return true;
+
 }
 
 // ============================================================
@@ -153,7 +231,8 @@ const TICKET_SUBJECTS = {
 
   general_support: {
 
-    label: 'General Support',
+    label:
+      'General Support',
 
     description:
       'Support which cannot be answered within general.',
@@ -184,11 +263,13 @@ const TICKET_SUBJECTS = {
 
       '*BlancoCountyRP*\n' +
       '*Director G. McCoy*'
+
   },
 
   management_support: {
 
-    label: 'Management Support',
+    label:
+      'Management Support',
 
     description:
       'For support which needs to be handled by management.',
@@ -220,6 +301,7 @@ const TICKET_SUBJECTS = {
 
       '*BlancoCountyRP*\n' +
       '*Director G. McCoy*'
+
   }
 
 };
@@ -229,7 +311,9 @@ const TICKET_SUBJECTS = {
 // ============================================================
 
 const DISCORD_REGULATIONS_TEXT =
+
   '**Discord Guidelines:**\n' +
+
   'By joining, you agree to follow the [Discord Terms of Service](https://discord.com/terms) and [Discord Community Guidelines](https://discord.com/guidelines).\n\n' +
 
   '**1. Respect**\n' +
@@ -285,7 +369,9 @@ const DISCORD_REGULATIONS_TEXT =
 // ============================================================
 
 const INGAME_REGULATIONS_TEXT =
+
   '**Game Guidelines**\n' +
+
   'By joining, you agree to follow the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use).\n\n' +
 
   '**1. Respect**\n' +
@@ -351,22 +437,34 @@ const INGAME_REGULATIONS_TEXT =
 const DEPARTMENTS = [
 
   {
-    name: 'Blanco County Sheriff’s Office',
-    abbreviation: 'BCSO',
+    name:
+      'Blanco County Sheriff’s Office',
+
+    abbreviation:
+      'BCSO',
+
     description:
       'Provides law enforcement services throughout Blanco County and handles patrol, traffic enforcement, investigations, and emergency response.'
   },
 
   {
-    name: 'Blanco County Fire & Rescue',
-    abbreviation: 'BCFR',
+    name:
+      'Blanco County Fire & Rescue',
+
+    abbreviation:
+      'BCFR',
+
     description:
       'Provides fire suppression, rescue services, emergency response, and medical assistance throughout the county.'
   },
 
   {
-    name: 'Blanco County Department of Transportation',
-    abbreviation: 'BCDOT',
+    name:
+      'Blanco County Department of Transportation',
+
+    abbreviation:
+      'BCDOT',
+
     description:
       'Handles transportation operations, roadway services, traffic support, and infrastructure-related roleplay.'
   }
@@ -391,9 +489,12 @@ function addMedia(container, url) {
         }
       });
 
-  container.addMediaGalleryComponents(gallery);
+  container.addMediaGalleryComponents(
+    gallery
+  );
 
   return container;
+
 }
 
 function createPanel({
@@ -405,24 +506,35 @@ function createPanel({
 
   const container =
     new ContainerBuilder()
-      .setAccentColor(BRAND_COLOR);
+      .setAccentColor(
+        BRAND_COLOR
+      );
 
   if (topImage) {
-    addMedia(container, topImage);
+    addMedia(
+      container,
+      topImage
+    );
   }
 
   container.addTextDisplayComponents(
+
     new TextDisplayBuilder()
       .setContent(
         `## ${title}\n\n${content}`
       )
+
   );
 
   if (bottomImage) {
-    addMedia(container, bottomImage);
+    addMedia(
+      container,
+      bottomImage
+    );
   }
 
   return container;
+
 }
 
 function createTextPanel({
@@ -431,20 +543,31 @@ function createTextPanel({
 }) {
 
   return createPanel({
+
     title,
     content,
-    topImage: TOP_BANNER_URL,
-    bottomImage: BOTTOM_FOOTER_URL
+
+    topImage:
+      TOP_BANNER_URL,
+
+    bottomImage:
+      BOTTOM_FOOTER_URL
+
   });
 
 }
 
-function splitText(text, maxLength = 3500) {
+function splitText(
+  text,
+  maxLength = 3500
+) {
 
   const chunks = [];
   let current = '';
 
-  for (const line of text.split('\n')) {
+  for (
+    const line of text.split('\n')
+  ) {
 
     const next =
       `${current}${line}\n`;
@@ -471,21 +594,33 @@ function splitText(text, maxLength = 3500) {
   }
 
   if (current.trim()) {
+
     chunks.push(
       current.trim()
     );
+
   }
 
   return chunks;
+
 }
 
-function createStatusPanel(title, content) {
+function createStatusPanel(
+  title,
+  content
+) {
 
   return createPanel({
+
     title,
     content,
-    topImage: TICKET_BANNER_URL,
-    bottomImage: TICKET_BOTTOM_IMAGE_URL
+
+    topImage:
+      TICKET_BANNER_URL,
+
+    bottomImage:
+      TICKET_BOTTOM_IMAGE_URL
+
   });
 
 }
@@ -508,6 +643,7 @@ function getTicketOwner(channel) {
   return match
     ? match[1]
     : null;
+
 }
 
 function getTicketSubject(channel) {
@@ -524,6 +660,7 @@ function getTicketSubject(channel) {
   return match
     ? match[1]
     : 'Unknown';
+
 }
 
 function getTicketID(channel) {
@@ -540,6 +677,7 @@ function getTicketID(channel) {
   return match
     ? match[1]
     : 'Unknown';
+
 }
 
 function isStaff(member) {
@@ -549,22 +687,30 @@ function isStaff(member) {
   }
 
   const staffRoles = [
+
     SERVER_STAFF_ROLE_ID,
     SERVER_MANAGEMENT_ROLE_ID,
     PARTNERSHIP_TEAM_ROLE_ID
+
   ].filter(Boolean);
 
   return staffRoles.some(
     roleId =>
-      member.roles.cache.has(roleId)
+      member.roles.cache.has(
+        roleId
+      )
   );
+
 }
 
 // ============================================================
 // TRANSCRIPT
 // ============================================================
 
-async function sendTranscript(channel, closedBy) {
+async function sendTranscript(
+  channel,
+  closedBy
+) {
 
   if (!TICKET_TRANSCRIPT_CHANNEL_ID) {
     return;
@@ -585,6 +731,7 @@ async function sendTranscript(channel, closedBy) {
     );
 
     return;
+
   }
 
   const messages =
@@ -619,22 +766,30 @@ async function sendTranscript(channel, closedBy) {
   transcript +=
     '========================================\n\n';
 
-  for (const message of sorted) {
+  for (
+    const message of sorted
+  ) {
 
     const content =
       message.content ||
       '[Embed/Attachment/Component Message]';
 
     transcript +=
+
       `[${new Date(
         message.createdTimestamp
       ).toLocaleString()}] ` +
+
       `${message.author.tag}: ` +
+
       `${content}\n`;
 
-    if (message.attachments.size > 0) {
+    if (
+      message.attachments.size > 0
+    ) {
 
       transcript +=
+
         `Attachments: ${[
           ...message.attachments.values()
         ]
@@ -646,13 +801,20 @@ async function sendTranscript(channel, closedBy) {
 
     }
 
-    transcript += '\n';
+    transcript +=
+      '\n';
+
   }
 
-  if (transcript.length > 900000) {
+  if (
+    transcript.length > 900000
+  ) {
 
     transcript =
-      transcript.slice(0, 899000);
+      transcript.slice(
+        0,
+        899000
+      );
 
   }
 
@@ -662,6 +824,7 @@ async function sendTranscript(channel, closedBy) {
       `Ticket transcript for **${channel.name}**`,
 
     files: [
+
       {
         attachment:
           Buffer.from(
@@ -672,6 +835,7 @@ async function sendTranscript(channel, closedBy) {
         name:
           `${channel.name}-transcript.txt`
       }
+
     ]
 
   });
@@ -682,7 +846,10 @@ async function sendTranscript(channel, closedBy) {
 // FEEDBACK DM
 // ============================================================
 
-async function sendFeedbackDM(user, ticketInfo) {
+async function sendFeedbackDM(
+  user,
+  ticketInfo
+) {
 
   try {
 
@@ -693,8 +860,11 @@ async function sendFeedbackDM(user, ticketInfo) {
           'Ticket Feedback',
 
         content:
+
           'Thank you for contacting BlancoCountyRP Support.\n\n' +
+
           `Your **${ticketInfo.subject}** ticket has been closed.\n\n` +
+
           'Please rate the support you received.',
 
         topImage:
@@ -714,35 +884,45 @@ async function sendFeedbackDM(user, ticketInfo) {
               `feedback_1_${ticketInfo.ticketId}`
             )
             .setLabel('1')
-            .setStyle(ButtonStyle.Danger),
+            .setStyle(
+              ButtonStyle.Danger
+            ),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_2_${ticketInfo.ticketId}`
             )
             .setLabel('2')
-            .setStyle(ButtonStyle.Danger),
+            .setStyle(
+              ButtonStyle.Danger
+            ),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_3_${ticketInfo.ticketId}`
             )
             .setLabel('3')
-            .setStyle(ButtonStyle.Secondary),
+            .setStyle(
+              ButtonStyle.Secondary
+            ),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_4_${ticketInfo.ticketId}`
             )
             .setLabel('4')
-            .setStyle(ButtonStyle.Success),
+            .setStyle(
+              ButtonStyle.Success
+            ),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_5_${ticketInfo.ticketId}`
             )
             .setLabel('5')
-            .setStyle(ButtonStyle.Success)
+            .setStyle(
+              ButtonStyle.Success
+            )
 
         );
 
@@ -893,6 +1073,7 @@ client.once(
     client.user.setPresence({
 
       activities: [
+
         {
           name:
             'Blanco County, Texas',
@@ -900,6 +1081,7 @@ client.once(
           type:
             ActivityType.Watching
         }
+
       ],
 
       status:
@@ -926,7 +1108,8 @@ client.on(
 
       if (
         interaction.isStringSelectMenu() &&
-        interaction.customId === 'ticket_type'
+        interaction.customId ===
+          'ticket_type'
       ) {
 
         const selected =
@@ -938,10 +1121,13 @@ client.on(
         if (!subject) {
 
           return interaction.reply({
+
             content:
               'Invalid ticket type.',
+
             ephemeral:
               true
+
           });
 
         }
@@ -956,8 +1142,10 @@ client.on(
         if (!guild) {
 
           return interaction.editReply({
+
             content:
               'Tickets can only be opened inside a server.'
+
           });
 
         }
@@ -970,8 +1158,10 @@ client.on(
         ) {
 
           return interaction.editReply({
+
             content:
               'You do not have the required community member role to open a ticket.'
+
           });
 
         }
@@ -984,7 +1174,9 @@ client.on(
                 channel.type !==
                 ChannelType.GuildText
               ) {
+
                 return false;
+
               }
 
               return (
@@ -998,8 +1190,10 @@ client.on(
         if (existingTicket) {
 
           return interaction.editReply({
+
             content:
               `You already have an open ticket: ${existingTicket}`
+
           });
 
         }
@@ -1021,18 +1215,22 @@ client.on(
 
         const channelName =
           subject.channelName
+
             .replace(
               '{user}',
               safeUsername
             )
+
             .replace(
               '{user.id}',
               interaction.user.id
             )
+
             .replace(
               '{subject}',
               selected
             )
+
             .replace(
               '{ticketid}',
               ticketId
@@ -1045,8 +1243,11 @@ client.on(
               guild.roles.everyone.id,
 
             deny: [
+
               PermissionFlagsBits.ViewChannel
+
             ]
+
           },
 
           {
@@ -1054,12 +1255,15 @@ client.on(
               interaction.user.id,
 
             allow: [
+
               PermissionFlagsBits.ViewChannel,
               PermissionFlagsBits.SendMessages,
               PermissionFlagsBits.ReadMessageHistory,
               PermissionFlagsBits.AttachFiles,
               PermissionFlagsBits.EmbedLinks
+
             ]
+
           }
 
         ];
@@ -1074,12 +1278,14 @@ client.on(
               roleId,
 
             allow: [
+
               PermissionFlagsBits.ViewChannel,
               PermissionFlagsBits.SendMessages,
               PermissionFlagsBits.ReadMessageHistory,
               PermissionFlagsBits.AttachFiles,
               PermissionFlagsBits.EmbedLinks,
               PermissionFlagsBits.ManageMessages
+
             ]
 
           });
@@ -1108,11 +1314,11 @@ client.on(
 
           });
 
-        // Send the mention separately.
-        // Components V2 cannot use top-level "content".
         await ticketChannel.send({
+
           content:
             `${interaction.user} — your ticket has been opened.`
+
         });
 
         const ticketPanel =
@@ -1180,6 +1386,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1188,7 +1395,8 @@ client.on(
 
       if (
         interaction.isButton() &&
-        interaction.customId === 'claim_ticket'
+        interaction.customId ===
+          'claim_ticket'
       ) {
 
         if (!interaction.channel) {
@@ -1202,10 +1410,13 @@ client.on(
         ) {
 
           return interaction.reply({
+
             content:
               'You do not have permission to claim tickets.',
+
             ephemeral:
               true
+
           });
 
         }
@@ -1232,6 +1443,7 @@ client.on(
               subject,
 
             content:
+
               `This ticket has been claimed by ${interaction.user}.\n\n` +
 
               `**Ticket ID:** ${ticketId}\n` +
@@ -1278,6 +1490,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1286,7 +1499,8 @@ client.on(
 
       if (
         interaction.isButton() &&
-        interaction.customId === 'close_ticket'
+        interaction.customId ===
+          'close_ticket'
       ) {
 
         if (!interaction.channel) {
@@ -1299,17 +1513,21 @@ client.on(
           );
 
         if (
-          interaction.user.id !== ownerId &&
+          interaction.user.id !==
+            ownerId &&
           !isStaff(
             interaction.member
           )
         ) {
 
           return interaction.reply({
+
             content:
               'You do not have permission to close this ticket.',
+
             ephemeral:
               true
+
           });
 
         }
@@ -1349,7 +1567,9 @@ client.on(
               'Close Ticket',
 
             content:
+
               'Are you sure you want to close this ticket?\n\n' +
+
               'The ticket transcript will be saved and the ticket owner will receive a feedback message.',
 
             topImage:
@@ -1373,6 +1593,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1387,9 +1608,12 @@ client.on(
 
         const cancelledPanel =
           createStatusPanel(
+
             'Close Ticket',
+
             'Ticket closure has been cancelled.\n\n' +
             'The ticket remains open.'
+
           );
 
         await interaction.update({
@@ -1404,6 +1628,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1449,11 +1674,14 @@ client.on(
         if (owner) {
 
           await sendFeedbackDM(
+
             owner,
+
             {
               ticketId,
               subject
             }
+
           );
 
         }
@@ -1464,7 +1692,9 @@ client.on(
             'Ticket Closed',
 
             'This ticket has been closed.\n\n' +
+
             'The transcript has been saved and the ticket owner has been sent a feedback request.\n\n' +
+
             'This channel will be deleted shortly.'
 
           );
@@ -1481,6 +1711,7 @@ client.on(
         });
 
         setTimeout(
+
           async () => {
 
             try {
@@ -1497,10 +1728,13 @@ client.on(
             }
 
           },
+
           5000
+
         );
 
         return;
+
       }
 
       // ========================================================
@@ -1544,6 +1778,7 @@ client.on(
                   'Ticket Feedback',
 
                 content:
+
                   `**User:** ${interaction.user}\n` +
                   `**Rating:** ${rating}/5\n` +
                   `**Ticket ID:** ${ticketId}`,
@@ -1577,6 +1812,7 @@ client.on(
             'Feedback Received',
 
             'Thank you for your feedback.\n\n' +
+
             `Your rating of **${rating}/5** has been recorded.`
 
           );
@@ -1593,6 +1829,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1608,10 +1845,13 @@ client.on(
         if (!VERIFIED_ROLE_ID) {
 
           return interaction.reply({
+
             content:
               'The verification role has not been configured yet.',
+
             ephemeral:
               true
+
           });
 
         }
@@ -1623,10 +1863,13 @@ client.on(
         ) {
 
           return interaction.reply({
+
             content:
               'You are already verified.',
+
             ephemeral:
               true
+
           });
 
         }
@@ -1636,13 +1879,17 @@ client.on(
         );
 
         await interaction.reply({
+
           content:
             'You have been verified successfully.',
+
           ephemeral:
             true
+
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1700,6 +1947,7 @@ client.on(
             .addOptions(
 
               {
+
                 label:
                   'General Support',
 
@@ -1708,9 +1956,11 @@ client.on(
 
                 value:
                   'general_support'
+
               },
 
               {
+
                 label:
                   'Management Support',
 
@@ -1719,6 +1969,7 @@ client.on(
 
                 value:
                   'management_support'
+
               }
 
             );
@@ -1742,6 +1993,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1819,6 +2071,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1838,8 +2091,10 @@ client.on(
               'Pong',
 
             content:
+
               `**Bot Latency:** ${Date.now() - interaction.createdTimestamp}ms\n` +
               `**API Latency:** ${client.ws.ping}ms\n\n` +
+
               MOTTO
 
           });
@@ -1856,6 +2111,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1900,6 +2156,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1919,6 +2176,7 @@ client.on(
 
         const panels =
           chunks.map(
+
             (chunk, index) =>
 
               createTextPanel({
@@ -1932,6 +2190,7 @@ client.on(
                   chunk
 
               })
+
           );
 
         await interaction.reply({
@@ -1945,6 +2204,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -1964,6 +2224,7 @@ client.on(
 
         const panels =
           chunks.map(
+
             (chunk, index) =>
 
               createTextPanel({
@@ -1977,6 +2238,7 @@ client.on(
                   chunk
 
               })
+
           );
 
         await interaction.reply({
@@ -1990,6 +2252,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -2004,14 +2267,20 @@ client.on(
 
         const departmentText =
           DEPARTMENTS
+
             .map(
+
               department =>
 
                 `### ${department.name}\n` +
                 `**${department.abbreviation}**\n` +
                 department.description
+
             )
-            .join('\n\n');
+
+            .join(
+              '\n\n'
+            );
 
         const panel =
           createTextPanel({
@@ -2020,7 +2289,9 @@ client.on(
               'BlancoCountyRP Departments',
 
             content:
+
               'Your journey at BlancoCountyRP starts here. Explore our departments and become part of the community.\n\n' +
+
               departmentText
 
           });
@@ -2037,6 +2308,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -2095,6 +2367,7 @@ client.on(
         });
 
         return;
+
       }
 
       // ========================================================
@@ -2140,6 +2413,7 @@ client.on(
         });
 
         return;
+
       }
 
     } catch (error) {
@@ -2196,7 +2470,7 @@ client.on(
 // ============================================================
 // REGISTER SLASH COMMANDS
 //
-// IMPORTANT CHANGE:
+// IMPORTANT:
 // The bot logs in FIRST.
 // Then we use the actual authenticated application ID.
 // ============================================================
@@ -2291,7 +2565,9 @@ async function registerCommands() {
       `HTTP Status: ${error?.status ?? 'unknown'}`
     );
 
-    if (error?.status === 401) {
+    if (
+      error?.status === 401
+    ) {
 
       console.error(
         'Discord returned 401 Unauthorized.'
@@ -2309,7 +2585,9 @@ async function registerCommands() {
         'Then replace BOT_TOKEN in Render → Environment.'
       );
 
-    } else if (error?.status === 403) {
+    } else if (
+      error?.status === 403
+    ) {
 
       console.error(
         'Discord returned 403 Forbidden.'
@@ -2319,7 +2597,9 @@ async function registerCommands() {
         'Check the application permissions and bot configuration.'
       );
 
-    } else if (error?.status === 404) {
+    } else if (
+      error?.status === 404
+    ) {
 
       console.error(
         'Discord returned 404 Not Found.'
@@ -2340,7 +2620,6 @@ async function registerCommands() {
 // ============================================================
 // START BOT
 //
-// IMPORTANT:
 // LOGIN FIRST → VERIFY TOKEN → REGISTER COMMANDS
 // ============================================================
 
@@ -2362,7 +2641,9 @@ async function startBot() {
     '=================================================='
   );
 
-  if (!validateEnvironment()) {
+  if (
+    !validateEnvironment()
+  ) {
 
     process.exit(1);
 
@@ -2386,16 +2667,20 @@ async function startBot() {
     // STEP 2 — WAIT FOR READY
     // ----------------------------------------------------------
 
-    if (!client.isReady()) {
+    if (
+      !client.isReady()
+    ) {
 
-      await new Promise(resolve => {
+      await new Promise(
+        resolve => {
 
-        client.once(
-          'ready',
-          resolve
-        );
+          client.once(
+            'ready',
+            resolve
+          );
 
-      });
+        }
+      );
 
     }
 
@@ -2475,7 +2760,9 @@ async function startBot() {
       '=================================================='
     );
 
-    if (error?.status === 401) {
+    if (
+      error?.status === 401
+    ) {
 
       console.error(
         'DISCORD AUTHENTICATION FAILED: 401 UNAUTHORIZED'
