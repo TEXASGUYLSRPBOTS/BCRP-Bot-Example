@@ -18,12 +18,17 @@ import {
   ButtonStyle,
   ActionRowBuilder,
   StringSelectMenuBuilder,
+  ChannelSelectMenuBuilder,
   ChannelType,
   PermissionFlagsBits,
   MessageFlags,
   ContainerBuilder,
   TextDisplayBuilder,
-  MediaGalleryBuilder
+  MediaGalleryBuilder,
+  EmbedBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle
 } from 'discord.js';
 
 // ============================================================
@@ -243,21 +248,15 @@ const TICKET_SUBJECTS = {
 
     message:
       '**General Support**\n\n' +
-
       'Do not ping support staff. Remain respectful at all times.\n\n' +
-
       '**Basic Format:**\n\n' +
-
       '**Discord Name:**\n' +
       '**Assistance Reason:**\n' +
       '**Extra Notes/Concerns:**\n\n' +
-
       'Please follow this format and a team member will get to you as soon as possible.\n\n' +
-
       '**Please Read This**\n' +
       'Please do not open a ticket about partnering with us or merging. ' +
       'The ticket will be closed if so.\n\n' +
-
       '*BlancoCountyRP*\n' +
       '*Director G. McCoy*'
 
@@ -281,21 +280,15 @@ const TICKET_SUBJECTS = {
 
     message:
       '**Management Support**\n\n' +
-
       'Do not ping management staff. Remain respectful at all times.\n\n' +
-
       '**Basic Format:**\n\n' +
-
       '**Discord Name:**\n' +
       '**Assistance Reason:**\n' +
       '**Extra Notes/Concerns:**\n\n' +
-
       'Please follow this format and a management team member will get to you as soon as possible.\n\n' +
-
       '**Please Read This**\n' +
       'Please do not open a ticket about partnering with us or merging. ' +
       'The ticket will be closed if so.\n\n' +
-
       '*BlancoCountyRP*\n' +
       '*Director G. McCoy*'
 
@@ -474,9 +467,7 @@ const DEPARTMENTS = [
 
 function addMedia(container, url) {
 
-  if (!url) {
-    return container;
-  }
+  if (!url) return container;
 
   const gallery =
     new MediaGalleryBuilder()
@@ -491,7 +482,6 @@ function addMedia(container, url) {
   );
 
   return container;
-
 }
 
 function createPanel({
@@ -503,35 +493,24 @@ function createPanel({
 
   const container =
     new ContainerBuilder()
-      .setAccentColor(
-        BRAND_COLOR
-      );
+      .setAccentColor(BRAND_COLOR);
 
   if (topImage) {
-    addMedia(
-      container,
-      topImage
-    );
+    addMedia(container, topImage);
   }
 
   container.addTextDisplayComponents(
-
     new TextDisplayBuilder()
       .setContent(
         `## ${title}\n\n${content}`
       )
-
   );
 
   if (bottomImage) {
-    addMedia(
-      container,
-      bottomImage
-    );
+    addMedia(container, bottomImage);
   }
 
   return container;
-
 }
 
 function createTextPanel({
@@ -540,18 +519,11 @@ function createTextPanel({
 }) {
 
   return createPanel({
-
     title,
     content,
-
-    topImage:
-      TOP_BANNER_URL,
-
-    bottomImage:
-      BOTTOM_FOOTER_URL
-
+    topImage: TOP_BANNER_URL,
+    bottomImage: BOTTOM_FOOTER_URL
   });
-
 }
 
 function splitText(
@@ -562,9 +534,7 @@ function splitText(
   const chunks = [];
   let current = '';
 
-  for (
-    const line of text.split('\n')
-  ) {
+  for (const line of text.split('\n')) {
 
     const next =
       `${current}${line}\n`;
@@ -591,15 +561,12 @@ function splitText(
   }
 
   if (current.trim()) {
-
     chunks.push(
       current.trim()
     );
-
   }
 
   return chunks;
-
 }
 
 function createStatusPanel(
@@ -608,18 +575,11 @@ function createStatusPanel(
 ) {
 
   return createPanel({
-
     title,
     content,
-
-    topImage:
-      TICKET_BANNER_URL,
-
-    bottomImage:
-      TICKET_BOTTOM_IMAGE_URL
-
+    topImage: TICKET_BANNER_URL,
+    bottomImage: TICKET_BOTTOM_IMAGE_URL
   });
-
 }
 
 // ============================================================
@@ -628,9 +588,7 @@ function createStatusPanel(
 
 function getTicketOwner(channel) {
 
-  if (!channel.topic) {
-    return null;
-  }
+  if (!channel.topic) return null;
 
   const match =
     channel.topic.match(
@@ -640,14 +598,11 @@ function getTicketOwner(channel) {
   return match
     ? match[1]
     : null;
-
 }
 
 function getTicketSubject(channel) {
 
-  if (!channel.topic) {
-    return 'Unknown';
-  }
+  if (!channel.topic) return 'Unknown';
 
   const match =
     channel.topic.match(
@@ -657,14 +612,11 @@ function getTicketSubject(channel) {
   return match
     ? match[1]
     : 'Unknown';
-
 }
 
 function getTicketID(channel) {
 
-  if (!channel.topic) {
-    return 'Unknown';
-  }
+  if (!channel.topic) return 'Unknown';
 
   const match =
     channel.topic.match(
@@ -674,7 +626,6 @@ function getTicketID(channel) {
   return match
     ? match[1]
     : 'Unknown';
-
 }
 
 function isStaff(member) {
@@ -684,20 +635,15 @@ function isStaff(member) {
   }
 
   const staffRoles = [
-
     SERVER_STAFF_ROLE_ID,
     SERVER_MANAGEMENT_ROLE_ID,
     PARTNERSHIP_TEAM_ROLE_ID
-
   ].filter(Boolean);
 
   return staffRoles.some(
     roleId =>
-      member.roles.cache.has(
-        roleId
-      )
+      member.roles.cache.has(roleId)
   );
-
 }
 
 // ============================================================
@@ -728,7 +674,6 @@ async function sendTranscript(
     );
 
     return;
-
   }
 
   const messages =
@@ -763,30 +708,22 @@ async function sendTranscript(
   transcript +=
     '========================================\n\n';
 
-  for (
-    const message of sorted
-  ) {
+  for (const message of sorted) {
 
     const content =
       message.content ||
       '[Embed/Attachment/Component Message]';
 
     transcript +=
-
       `[${new Date(
         message.createdTimestamp
       ).toLocaleString()}] ` +
-
       `${message.author.tag}: ` +
-
       `${content}\n`;
 
-    if (
-      message.attachments.size > 0
-    ) {
+    if (message.attachments.size > 0) {
 
       transcript +=
-
         `Attachments: ${[
           ...message.attachments.values()
         ]
@@ -795,24 +732,17 @@ async function sendTranscript(
               attachment.url
           )
           .join(', ')}\n`;
-
     }
 
-    transcript +=
-      '\n';
-
+    transcript += '\n';
   }
 
-  if (
-    transcript.length > 900000
-  ) {
-
+  if (transcript.length > 900000) {
     transcript =
       transcript.slice(
         0,
         899000
       );
-
   }
 
   await transcriptChannel.send({
@@ -821,7 +751,6 @@ async function sendTranscript(
       `Ticket transcript for **${channel.name}**`,
 
     files: [
-
       {
         attachment:
           Buffer.from(
@@ -832,11 +761,9 @@ async function sendTranscript(
         name:
           `${channel.name}-transcript.txt`
       }
-
     ]
 
   });
-
 }
 
 // ============================================================
@@ -942,7 +869,1398 @@ async function sendFeedbackDM(
     );
 
   }
+}
 
+// ============================================================
+// ADVANCED EMBED STUDIO
+// ============================================================
+
+const embedDrafts = new Map();
+const embedTemplates = new Map();
+
+function blankEmbedDraft() {
+
+  return {
+
+    content: '',
+
+    embeds: [
+      {
+        title: '',
+        description: '',
+        color: 'FFFFFF',
+        url: '',
+        timestamp: false,
+
+        author: {
+          name: '',
+          url: '',
+          iconURL: ''
+        },
+
+        footer: {
+          text: '',
+          iconURL: ''
+        },
+
+        thumbnail: '',
+        image: '',
+
+        fields: []
+      }
+    ],
+
+    allowedMentions: {
+      users: false,
+      roles: false,
+      everyone: false
+    }
+
+  };
+}
+
+function cloneData(data) {
+  return JSON.parse(
+    JSON.stringify(data)
+  );
+}
+
+function getEmbedDraft(userId) {
+
+  if (!embedDrafts.has(userId)) {
+    embedDrafts.set(
+      userId,
+      blankEmbedDraft()
+    );
+  }
+
+  return embedDrafts.get(userId);
+}
+
+function currentEmbed(userId) {
+
+  const draft =
+    getEmbedDraft(userId);
+
+  if (!draft.embeds.length) {
+
+    draft.embeds.push(
+      blankEmbedDraft().embeds[0]
+    );
+
+  }
+
+  return draft.embeds[0];
+}
+
+function normalizeColor(value) {
+
+  if (!value) {
+    return null;
+  }
+
+  let color =
+    String(value)
+      .trim()
+      .replace(/^#/, '');
+
+  if (
+    !/^[0-9a-fA-F]{6}$/.test(color)
+  ) {
+    return null;
+  }
+
+  return parseInt(
+    color,
+    16
+  );
+}
+
+function validHttpUrl(value) {
+
+  if (!value) return true;
+
+  try {
+
+    const url =
+      new URL(value);
+
+    return (
+      url.protocol === 'http:' ||
+      url.protocol === 'https:'
+    );
+
+  } catch {
+
+    return false;
+
+  }
+}
+
+function embedCharacterCount(embed) {
+
+  let count = 0;
+
+  count +=
+    embed.title?.length || 0;
+
+  count +=
+    embed.description?.length || 0;
+
+  count +=
+    embed.author?.name?.length || 0;
+
+  count +=
+    embed.footer?.text?.length || 0;
+
+  for (
+    const field of embed.fields || []
+  ) {
+
+    count +=
+      field.name?.length || 0;
+
+    count +=
+      field.value?.length || 0;
+
+  }
+
+  return count;
+}
+
+function validateEmbed(embed) {
+
+  const errors = [];
+
+  if (
+    embed.title &&
+    embed.title.length > 256
+  ) {
+
+    errors.push(
+      'Title is over 256 characters.'
+    );
+
+  }
+
+  if (
+    embed.description &&
+    embed.description.length > 4096
+  ) {
+
+    errors.push(
+      'Description is over 4096 characters.'
+    );
+
+  }
+
+  if (
+    embed.fields.length > 25
+  ) {
+
+    errors.push(
+      'An embed can have a maximum of 25 fields.'
+    );
+
+  }
+
+  for (
+    let index = 0;
+    index < embed.fields.length;
+    index++
+  ) {
+
+    const field =
+      embed.fields[index];
+
+    if (
+      field.name.length > 256
+    ) {
+
+      errors.push(
+        `Field ${index + 1} name is over 256 characters.`
+      );
+
+    }
+
+    if (
+      field.value.length > 1024
+    ) {
+
+      errors.push(
+        `Field ${index + 1} value is over 1024 characters.`
+      );
+
+    }
+
+  }
+
+  if (
+    embed.footer?.text &&
+    embed.footer.text.length > 2048
+  ) {
+
+    errors.push(
+      'Footer is over 2048 characters.'
+    );
+
+  }
+
+  if (
+    embed.author?.name &&
+    embed.author.name.length > 256
+  ) {
+
+    errors.push(
+      'Author name is over 256 characters.'
+    );
+
+  }
+
+  if (
+    embed.url &&
+    !validHttpUrl(embed.url)
+  ) {
+
+    errors.push(
+      'Title URL must be a valid HTTP/HTTPS URL.'
+    );
+
+  }
+
+  for (const url of [
+    embed.thumbnail,
+    embed.image,
+    embed.author?.url,
+    embed.author?.iconURL,
+    embed.footer?.iconURL
+  ]) {
+
+    if (
+      url &&
+      !validHttpUrl(url)
+    ) {
+
+      errors.push(
+        'One or more image/icon URLs are invalid.'
+      );
+
+      break;
+
+    }
+
+  }
+
+  if (
+    embed.color &&
+    !normalizeColor(embed.color)
+  ) {
+
+    errors.push(
+      'Color must be a six-digit hexadecimal color.'
+    );
+
+  }
+
+  if (
+    embedCharacterCount(embed) > 6000
+  ) {
+
+    errors.push(
+      'The embed exceeds Discord’s 6000-character limit.'
+    );
+
+  }
+
+  return errors;
+}
+
+function buildUserEmbed(embed) {
+
+  const result =
+    new EmbedBuilder();
+
+  if (embed.title) {
+    result.setTitle(
+      embed.title
+    );
+  }
+
+  if (embed.description) {
+    result.setDescription(
+      embed.description
+    );
+  }
+
+  const color =
+    normalizeColor(
+      embed.color
+    );
+
+  if (color !== null) {
+    result.setColor(color);
+  }
+
+  if (embed.url) {
+    result.setURL(
+      embed.url
+    );
+  }
+
+  if (embed.timestamp) {
+    result.setTimestamp();
+  }
+
+  if (
+    embed.author?.name
+  ) {
+
+    result.setAuthor({
+
+      name:
+        embed.author.name,
+
+      url:
+        embed.author.url ||
+        undefined,
+
+      iconURL:
+        embed.author.iconURL ||
+        undefined
+
+    });
+
+  }
+
+  if (
+    embed.footer?.text
+  ) {
+
+    result.setFooter({
+
+      text:
+        embed.footer.text,
+
+      iconURL:
+        embed.footer.iconURL ||
+        undefined
+
+    });
+
+  }
+
+  if (embed.thumbnail) {
+    result.setThumbnail(
+      embed.thumbnail
+    );
+  }
+
+  if (embed.image) {
+    result.setImage(
+      embed.image
+    );
+  }
+
+  if (
+    embed.fields?.length
+  ) {
+
+    result.addFields(
+      embed.fields.map(
+        field => ({
+
+          name:
+            field.name,
+
+          value:
+            field.value,
+
+          inline:
+            Boolean(
+              field.inline
+            )
+
+        })
+      )
+    );
+
+  }
+
+  return result;
+}
+
+function embedStudioDashboard(
+  userId
+) {
+
+  const draft =
+    getEmbedDraft(userId);
+
+  const embed =
+    currentEmbed(userId);
+
+  const errors =
+    validateEmbed(embed);
+
+  const preview =
+    buildUserEmbed(embed);
+
+  const description =
+    [
+
+      '**Advanced Embed Studio**',
+
+      `Embeds: **${draft.embeds.length}/10**`,
+
+      `Fields: **${embed.fields.length}/25**`,
+
+      `Characters: **${embedCharacterCount(embed)}/6000**`,
+
+      `Color: **#${embed.color || 'FFFFFF'}**`,
+
+      `Timestamp: **${embed.timestamp ? 'Enabled' : 'Disabled'}**`,
+
+      errors.length
+        ? `\n⚠️ **${errors.length} validation issue(s)**`
+        : '\n✅ **Ready to send**'
+
+    ].join('\n');
+
+  const rows = [
+
+    new ActionRowBuilder()
+      .addComponents(
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_basic'
+          )
+          .setLabel(
+            'Basic'
+          )
+          .setStyle(
+            ButtonStyle.Primary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_media'
+          )
+          .setLabel(
+            'Media'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_author'
+          )
+          .setLabel(
+            'Author'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_footer'
+          )
+          .setLabel(
+            'Footer'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          )
+
+      ),
+
+    new ActionRowBuilder()
+      .addComponents(
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_fields'
+          )
+          .setLabel(
+            'Fields'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_message'
+          )
+          .setLabel(
+            'Message'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_mentions'
+          )
+          .setLabel(
+            'Mentions'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_preview'
+          )
+          .setLabel(
+            'Preview'
+          )
+          .setStyle(
+            ButtonStyle.Primary
+          )
+
+      ),
+
+    new ActionRowBuilder()
+      .addComponents(
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_send'
+          )
+          .setLabel(
+            'Send'
+          )
+          .setStyle(
+            ButtonStyle.Success
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_json_export'
+          )
+          .setLabel(
+            'Export JSON'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_json_import'
+          )
+          .setLabel(
+            'Import JSON'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_advanced'
+          )
+          .setLabel(
+            'Advanced'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          )
+
+      )
+
+  ];
+
+  return {
+
+    content:
+      `${description}\n\n` +
+      `**Live Preview:**\n${embed.title || '*Untitled Embed*'}\n` +
+      `${embed.description || '*No description*'}`,
+
+    embeds: [
+      preview
+    ],
+
+    components:
+      rows,
+
+    ephemeral:
+      true
+
+  };
+
+}
+
+function embedFieldsPanel(
+  userId
+) {
+
+  const draft =
+    getEmbedDraft(userId);
+
+  const embed =
+    currentEmbed(userId);
+
+  const options =
+    embed.fields
+      .map(
+        (field, index) => ({
+
+          label:
+            `${index + 1}. ${field.name || 'Unnamed Field'}`
+              .slice(0, 100),
+
+          description:
+            `${field.inline ? 'Inline' : 'Full width'} • ${field.value.length} chars`
+              .slice(0, 100),
+
+          value:
+            String(index)
+
+        })
+      );
+
+  const components = [];
+
+  if (options.length) {
+
+    components.push(
+
+      new ActionRowBuilder()
+        .addComponents(
+
+          new StringSelectMenuBuilder()
+            .setCustomId(
+              'embed_field_select'
+            )
+            .setPlaceholder(
+              'Select a field to manage...'
+            )
+            .addOptions(
+              options
+            )
+
+        )
+
+    );
+
+  }
+
+  components.push(
+
+    new ActionRowBuilder()
+      .addComponents(
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_field_add'
+          )
+          .setLabel(
+            'Add Field'
+          )
+          .setStyle(
+            ButtonStyle.Success
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            'embed_dashboard'
+          )
+          .setLabel(
+            'Back'
+          )
+          .setStyle(
+            ButtonStyle.Secondary
+          )
+
+      )
+
+  );
+
+  return {
+
+    content:
+      `**Field Manager — ${embed.fields.length}/25**\n\n` +
+      (embed.fields.length
+        ? 'Select a field below to edit, duplicate, move, or delete it.'
+        : 'No fields have been created yet.'),
+
+    components,
+
+    ephemeral:
+      true
+
+  };
+}
+
+function embedFieldActions(
+  index,
+  userId
+) {
+
+  const embed =
+    currentEmbed(userId);
+
+  const field =
+    embed.fields[index];
+
+  if (!field) {
+
+    return {
+      content:
+        'That field no longer exists.',
+      ephemeral:
+        true
+    };
+
+  }
+
+  return {
+
+    content:
+
+      `**Field ${index + 1}**\n\n` +
+
+      `**Name:** ${field.name}\n` +
+
+      `**Value:** ${field.value.slice(0, 1000)}\n\n` +
+
+      `**Inline:** ${field.inline ? 'Yes' : 'No'}`,
+
+    components: [
+
+      new ActionRowBuilder()
+        .addComponents(
+
+          new ButtonBuilder()
+            .setCustomId(
+              `embed_field_edit_${index}`
+            )
+            .setLabel(
+              'Edit'
+            )
+            .setStyle(
+              ButtonStyle.Primary
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              `embed_field_duplicate_${index}`
+            )
+            .setLabel(
+              'Duplicate'
+            )
+            .setStyle(
+              ButtonStyle.Secondary
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              `embed_field_delete_${index}`
+            )
+            .setLabel(
+              'Delete'
+            )
+            .setStyle(
+              ButtonStyle.Danger
+            )
+
+        ),
+
+      new ActionRowBuilder()
+        .addComponents(
+
+          new ButtonBuilder()
+            .setCustomId(
+              `embed_field_up_${index}`
+            )
+            .setLabel(
+              'Move Up'
+            )
+            .setStyle(
+              ButtonStyle.Secondary
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              `embed_field_down_${index}`
+            )
+            .setLabel(
+              'Move Down'
+            )
+            .setStyle(
+              ButtonStyle.Secondary
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              'embed_fields'
+            )
+            .setLabel(
+              'Back'
+            )
+            .setStyle(
+              ButtonStyle.Secondary
+            )
+
+        )
+
+    ],
+
+    ephemeral:
+      true
+
+  };
+}
+
+function embedAdvancedPanel(
+  userId
+) {
+
+  return {
+
+    content:
+      '**Advanced Embed Studio**\n\n' +
+      'Manage templates, JSON, embeds, and the complete draft.',
+
+    components: [
+
+      new ActionRowBuilder()
+        .addComponents(
+
+          new ButtonBuilder()
+            .setCustomId(
+              'embed_save_template'
+            )
+            .setLabel(
+              'Save Template'
+            )
+            .setStyle(
+              ButtonStyle.Success
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              'embed_load_template'
+            )
+            .setLabel(
+              'Load Template'
+            )
+            .setStyle(
+              ButtonStyle.Primary
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              'embed_reset'
+            )
+            .setLabel(
+              'Reset'
+            )
+            .setStyle(
+              ButtonStyle.Danger
+            )
+
+        ),
+
+      new ActionRowBuilder()
+        .addComponents(
+
+          new ButtonBuilder()
+            .setCustomId(
+              'embed_add_embed'
+            )
+            .setLabel(
+              'Add Embed'
+            )
+            .setStyle(
+              ButtonStyle.Success
+            ),
+
+          new ButtonBuilder()
+            .setCustomId(
+              'embed_dashboard'
+            )
+            .setLabel(
+              'Back'
+            )
+            .setStyle(
+              ButtonStyle.Secondary
+            )
+
+        )
+
+    ],
+
+    ephemeral:
+      true
+
+  };
+}
+
+function createEmbedModal(
+  type,
+  userId,
+  fieldIndex = null
+) {
+
+  const embed =
+    currentEmbed(userId);
+
+  const modal =
+    new ModalBuilder();
+
+  if (type === 'basic') {
+
+    return modal
+      .setCustomId(
+        'embed_modal_basic'
+      )
+      .setTitle(
+        'Basic Embed Settings'
+      )
+      .addComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'title'
+              )
+              .setLabel(
+                'Embed Title'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.title.slice(0, 256)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'description'
+              )
+              .setLabel(
+                'Description'
+              )
+              .setStyle(
+                TextInputStyle.Paragraph
+              )
+              .setRequired(false)
+              .setValue(
+                embed.description.slice(0, 4096)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'color'
+              )
+              .setLabel(
+                'Hex Color'
+              )
+              .setPlaceholder(
+                '#FFFFFF'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                `#${embed.color || 'FFFFFF'}`
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'url'
+              )
+              .setLabel(
+                'Title URL'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.url.slice(0, 1024)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'timestamp'
+              )
+              .setLabel(
+                'Timestamp: yes or no'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.timestamp
+                  ? 'yes'
+                  : 'no'
+              )
+
+          )
+
+      );
+
+  }
+
+  if (type === 'media') {
+
+    return modal
+      .setCustomId(
+        'embed_modal_media'
+      )
+      .setTitle(
+        'Images & Media'
+      )
+      .addComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'image'
+              )
+              .setLabel(
+                'Large Image URL'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.image.slice(0, 1024)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'thumbnail'
+              )
+              .setLabel(
+                'Thumbnail URL'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.thumbnail.slice(0, 1024)
+              )
+
+          )
+
+      );
+
+  }
+
+  if (type === 'author') {
+
+    return modal
+      .setCustomId(
+        'embed_modal_author'
+      )
+      .setTitle(
+        'Author'
+      )
+      .addComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'name'
+              )
+              .setLabel(
+                'Author Name'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.author.name.slice(0, 256)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'url'
+              )
+              .setLabel(
+                'Author URL'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.author.url.slice(0, 1024)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'icon'
+              )
+              .setLabel(
+                'Author Icon URL'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.author.iconURL.slice(0, 1024)
+              )
+
+          )
+
+      );
+
+  }
+
+  if (type === 'footer') {
+
+    return modal
+      .setCustomId(
+        'embed_modal_footer'
+      )
+      .setTitle(
+        'Footer'
+      )
+      .addComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'text'
+              )
+              .setLabel(
+                'Footer Text'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.footer.text.slice(0, 2048)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'icon'
+              )
+              .setLabel(
+                'Footer Icon URL'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                embed.footer.iconURL.slice(0, 1024)
+              )
+
+          )
+
+      );
+
+  }
+
+  if (type === 'message') {
+
+    const draft =
+      getEmbedDraft(userId);
+
+    return modal
+      .setCustomId(
+        'embed_modal_message'
+      )
+      .setTitle(
+        'Message Content'
+      )
+      .addComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'content'
+              )
+              .setLabel(
+                'Message Content'
+              )
+              .setStyle(
+                TextInputStyle.Paragraph
+              )
+              .setRequired(false)
+              .setValue(
+                draft.content.slice(0, 4000)
+              )
+
+          )
+
+      );
+
+  }
+
+  if (type === 'field') {
+
+    const field =
+      fieldIndex !== null
+        ? embed.fields[fieldIndex]
+        : {
+            name: '',
+            value: '',
+            inline: false
+          };
+
+    return modal
+      .setCustomId(
+        fieldIndex === null
+          ? 'embed_modal_field_add'
+          : `embed_modal_field_edit_${fieldIndex}`
+      )
+      .setTitle(
+        fieldIndex === null
+          ? 'Add Field'
+          : 'Edit Field'
+      )
+      .addComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'name'
+              )
+              .setLabel(
+                'Field Name'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(true)
+              .setValue(
+                field.name.slice(0, 256)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'value'
+              )
+              .setLabel(
+                'Field Value'
+              )
+              .setStyle(
+                TextInputStyle.Paragraph
+              )
+              .setRequired(true)
+              .setValue(
+                field.value.slice(0, 1024)
+              )
+
+          ),
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new TextInputBuilder()
+              .setCustomId(
+                'inline'
+              )
+              .setLabel(
+                'Inline? yes or no'
+              )
+              .setStyle(
+                TextInputStyle.Short
+              )
+              .setRequired(false)
+              .setValue(
+                field.inline
+                  ? 'yes'
+                  : 'no'
+              )
+
+          )
+
+      );
+
+  }
+
+  return null;
+}
+
+function getModalValue(
+  interaction,
+  id
+) {
+
+  return interaction.fields
+    .getTextInputValue(id)
+    .trim();
 }
 
 // ============================================================
@@ -1003,6 +2321,12 @@ const commands = [
     .setName('verifypanel')
     .setDescription(
       'Send the BlancoCountyRP verification panel.'
+    ),
+
+  new SlashCommandBuilder()
+    .setName('embed')
+    .setDescription(
+      'Open the advanced customizable embed studio.'
     )
 
 ].map(
@@ -1098,6 +2422,1973 @@ client.on(
   async interaction => {
 
     try {
+
+      // ========================================================
+      // ADVANCED /EMBED
+      // ========================================================
+
+      if (
+        interaction.isChatInputCommand() &&
+        interaction.commandName ===
+          'embed'
+      ) {
+
+        if (!interaction.guild) {
+
+          return interaction.reply({
+
+            content:
+              'The embed studio can only be used inside a server.',
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        embedDrafts.set(
+          interaction.user.id,
+          blankEmbedDraft()
+        );
+
+        return interaction.reply(
+          embedStudioDashboard(
+            interaction.user.id
+          )
+        );
+
+      }
+
+      // ========================================================
+      // EMBED BUTTONS
+      // ========================================================
+
+      if (
+        interaction.isButton() &&
+        interaction.customId.startsWith(
+          'embed_'
+        )
+      ) {
+
+        const userId =
+          interaction.user.id;
+
+        const draft =
+          getEmbedDraft(userId);
+
+        if (
+          interaction.customId ===
+          'embed_dashboard'
+        ) {
+
+          return interaction.update(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_basic'
+        ) {
+
+          return interaction.showModal(
+            createEmbedModal(
+              'basic',
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_media'
+        ) {
+
+          return interaction.showModal(
+            createEmbedModal(
+              'media',
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_author'
+        ) {
+
+          return interaction.showModal(
+            createEmbedModal(
+              'author',
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_footer'
+        ) {
+
+          return interaction.showModal(
+            createEmbedModal(
+              'footer',
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_message'
+        ) {
+
+          return interaction.showModal(
+            createEmbedModal(
+              'message',
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_fields'
+        ) {
+
+          return interaction.update(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_field_add'
+        ) {
+
+          const embed =
+            currentEmbed(userId);
+
+          if (
+            embed.fields.length >= 25
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Discord allows a maximum of 25 fields per embed.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          return interaction.showModal(
+            createEmbedModal(
+              'field',
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_preview'
+        ) {
+
+          const embed =
+            currentEmbed(userId);
+
+          const errors =
+            validateEmbed(embed);
+
+          if (errors.length) {
+
+            return interaction.reply({
+
+              content:
+                '**The embed has validation errors:**\n\n' +
+                errors
+                  .map(
+                    error =>
+                      `• ${error}`
+                  )
+                  .join('\n'),
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          return interaction.reply({
+
+            content:
+              draft.content ||
+              undefined,
+
+            embeds: [
+              buildUserEmbed(embed)
+            ],
+
+            allowedMentions: {
+              parse: []
+            },
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_mentions'
+        ) {
+
+          return interaction.reply({
+
+            content:
+              '**Mention Controls**\n\n' +
+              `Users: ${draft.allowedMentions.users ? 'Enabled' : 'Disabled'}\n` +
+              `Roles: ${draft.allowedMentions.roles ? 'Enabled' : 'Disabled'}\n` +
+              `@everyone/@here: ${draft.allowedMentions.everyone ? 'Enabled' : 'Disabled'}`,
+
+            components: [
+
+              new ActionRowBuilder()
+                .addComponents(
+
+                  new ButtonBuilder()
+                    .setCustomId(
+                      'embed_toggle_users'
+                    )
+                    .setLabel(
+                      'Toggle Users'
+                    )
+                    .setStyle(
+                      draft.allowedMentions.users
+                        ? ButtonStyle.Success
+                        : ButtonStyle.Secondary
+                    ),
+
+                  new ButtonBuilder()
+                    .setCustomId(
+                      'embed_toggle_roles'
+                    )
+                    .setLabel(
+                      'Toggle Roles'
+                    )
+                    .setStyle(
+                      draft.allowedMentions.roles
+                        ? ButtonStyle.Success
+                        : ButtonStyle.Secondary
+                    ),
+
+                  new ButtonBuilder()
+                    .setCustomId(
+                      'embed_toggle_everyone'
+                    )
+                    .setLabel(
+                      'Toggle Everyone'
+                    )
+                    .setStyle(
+                      draft.allowedMentions.everyone
+                        ? ButtonStyle.Success
+                        : ButtonStyle.Secondary
+                    )
+
+                ),
+
+              new ActionRowBuilder()
+                .addComponents(
+
+                  new ButtonBuilder()
+                    .setCustomId(
+                      'embed_dashboard'
+                    )
+                    .setLabel(
+                      'Back'
+                    )
+                    .setStyle(
+                      ButtonStyle.Secondary
+                    )
+
+                )
+
+            ],
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_toggle_users'
+        ) {
+
+          draft.allowedMentions.users =
+            !draft.allowedMentions.users;
+
+          return interaction.update({
+
+            content:
+              '**Mention Controls**\n\n' +
+              `Users: ${draft.allowedMentions.users ? 'Enabled' : 'Disabled'}\n` +
+              `Roles: ${draft.allowedMentions.roles ? 'Enabled' : 'Disabled'}\n` +
+              `@everyone/@here: ${draft.allowedMentions.everyone ? 'Enabled' : 'Disabled'}`,
+
+            components:
+              interaction.message.components
+
+          });
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_toggle_roles'
+        ) {
+
+          draft.allowedMentions.roles =
+            !draft.allowedMentions.roles;
+
+          return interaction.update({
+
+            content:
+              '**Mention Controls**\n\n' +
+              `Users: ${draft.allowedMentions.users ? 'Enabled' : 'Disabled'}\n` +
+              `Roles: ${draft.allowedMentions.roles ? 'Enabled' : 'Disabled'}\n` +
+              `@everyone/@here: ${draft.allowedMentions.everyone ? 'Enabled' : 'Disabled'}`,
+
+            components:
+              interaction.message.components
+
+          });
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_toggle_everyone'
+        ) {
+
+          draft.allowedMentions.everyone =
+            !draft.allowedMentions.everyone;
+
+          return interaction.update({
+
+            content:
+              '**Mention Controls**\n\n' +
+              `Users: ${draft.allowedMentions.users ? 'Enabled' : 'Disabled'}\n` +
+              `Roles: ${draft.allowedMentions.roles ? 'Enabled' : 'Disabled'}\n` +
+              `@everyone/@here: ${draft.allowedMentions.everyone ? 'Enabled' : 'Disabled'}`,
+
+            components:
+              interaction.message.components
+
+          });
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_advanced'
+        ) {
+
+          return interaction.update(
+            embedAdvancedPanel(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_reset'
+        ) {
+
+          embedDrafts.set(
+            userId,
+            blankEmbedDraft()
+          );
+
+          return interaction.update(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_add_embed'
+        ) {
+
+          if (
+            draft.embeds.length >= 10
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'You can create up to 10 embeds in one message.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          draft.embeds.push(
+            cloneData(
+              blankEmbedDraft().embeds[0]
+            )
+          );
+
+          return interaction.update(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_json_export'
+        ) {
+
+          const json =
+            JSON.stringify(
+              draft,
+              null,
+              2
+            );
+
+          if (
+            json.length > 1900
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Your JSON is too large to display directly in Discord. Use the editor data through the bot logs or reduce the embed size.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          return interaction.reply({
+
+            content:
+              `\`\`\`json\n${json}\n\`\`\``,
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_json_import'
+        ) {
+
+          const modal =
+            new ModalBuilder()
+              .setCustomId(
+                'embed_modal_json'
+              )
+              .setTitle(
+                'Import Embed JSON'
+              )
+              .addComponents(
+
+                new ActionRowBuilder()
+                  .addComponents(
+
+                    new TextInputBuilder()
+                      .setCustomId(
+                        'json'
+                      )
+                      .setLabel(
+                        'Paste Embed JSON'
+                      )
+                      .setStyle(
+                        TextInputStyle.Paragraph
+                      )
+                      .setRequired(true)
+
+                  )
+
+              );
+
+          return interaction.showModal(
+            modal
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_save_template'
+        ) {
+
+          const modal =
+            new ModalBuilder()
+              .setCustomId(
+                'embed_modal_save_template'
+              )
+              .setTitle(
+                'Save Embed Template'
+              )
+              .addComponents(
+
+                new ActionRowBuilder()
+                  .addComponents(
+
+                    new TextInputBuilder()
+                      .setCustomId(
+                        'name'
+                      )
+                      .setLabel(
+                        'Template Name'
+                      )
+                      .setStyle(
+                        TextInputStyle.Short
+                      )
+                      .setRequired(true)
+                      .setMaxLength(100)
+
+                  )
+
+              );
+
+          return interaction.showModal(
+            modal
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_load_template'
+        ) {
+
+          const templates =
+            embedTemplates.get(
+              userId
+            ) || {};
+
+          const names =
+            Object.keys(
+              templates
+            );
+
+          if (!names.length) {
+
+            return interaction.reply({
+
+              content:
+                'You do not have any saved templates yet.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          const options =
+            names
+              .slice(0, 25)
+              .map(
+                name => ({
+
+                  label:
+                    name.slice(0, 100),
+
+                  value:
+                    name
+
+                })
+              );
+
+          return interaction.reply({
+
+            content:
+              'Select a saved embed template:',
+
+            components: [
+
+              new ActionRowBuilder()
+                .addComponents(
+
+                  new StringSelectMenuBuilder()
+                    .setCustomId(
+                      'embed_template_select'
+                    )
+                    .setPlaceholder(
+                      'Select a template...'
+                    )
+                    .addOptions(
+                      options
+                    )
+
+                )
+
+            ],
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        if (
+          interaction.customId.startsWith(
+            'embed_field_edit_'
+          )
+        ) {
+
+          const index =
+            Number(
+              interaction.customId
+                .split('_')
+                .pop()
+            );
+
+          return interaction.showModal(
+            createEmbedModal(
+              'field',
+              userId,
+              index
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId.startsWith(
+            'embed_field_duplicate_'
+          )
+        ) {
+
+          const index =
+            Number(
+              interaction.customId
+                .split('_')
+                .pop()
+            );
+
+          const embed =
+            currentEmbed(userId);
+
+          if (
+            embed.fields.length >= 25
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'You already have 25 fields.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          const field =
+            embed.fields[index];
+
+          if (!field) {
+            return interaction.reply({
+              content:
+                'Field not found.',
+              ephemeral:
+                true
+            });
+          }
+
+          embed.fields.splice(
+            index + 1,
+            0,
+            cloneData(field)
+          );
+
+          return interaction.update(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId.startsWith(
+            'embed_field_delete_'
+          )
+        ) {
+
+          const index =
+            Number(
+              interaction.customId
+                .split('_')
+                .pop()
+            );
+
+          const embed =
+            currentEmbed(userId);
+
+          embed.fields.splice(
+            index,
+            1
+          );
+
+          return interaction.update(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId.startsWith(
+            'embed_field_up_'
+          )
+        ) {
+
+          const index =
+            Number(
+              interaction.customId
+                .split('_')
+                .pop()
+            );
+
+          const embed =
+            currentEmbed(userId);
+
+          if (
+            index > 0 &&
+            embed.fields[index]
+          ) {
+
+            [
+              embed.fields[index - 1],
+              embed.fields[index]
+            ] =
+            [
+              embed.fields[index],
+              embed.fields[index - 1]
+            ];
+
+          }
+
+          return interaction.update(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId.startsWith(
+            'embed_field_down_'
+          )
+        ) {
+
+          const index =
+            Number(
+              interaction.customId
+                .split('_')
+                .pop()
+            );
+
+          const embed =
+            currentEmbed(userId);
+
+          if (
+            index <
+              embed.fields.length - 1
+          ) {
+
+            [
+              embed.fields[index],
+              embed.fields[index + 1]
+            ] =
+            [
+              embed.fields[index + 1],
+              embed.fields[index]
+            ];
+
+          }
+
+          return interaction.update(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        if (
+          interaction.customId ===
+          'embed_send'
+        ) {
+
+          if (!interaction.guild) {
+
+            return interaction.reply({
+
+              content:
+                'The embed can only be sent from a server.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          const errors =
+            draft.embeds.flatMap(
+              (embed, index) =>
+                validateEmbed(embed)
+                  .map(
+                    error =>
+                      `Embed ${index + 1}: ${error}`
+                  )
+            );
+
+          if (errors.length) {
+
+            return interaction.reply({
+
+              content:
+                '**Fix these issues before sending:**\n\n' +
+                errors
+                  .slice(0, 15)
+                  .map(
+                    error =>
+                      `• ${error}`
+                  )
+                  .join('\n'),
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          const channels =
+            interaction.guild.channels.cache
+              .filter(
+                channel =>
+                  (
+                    channel.type ===
+                      ChannelType.GuildText ||
+                    channel.type ===
+                      ChannelType.GuildAnnouncement
+                  ) &&
+                  channel.viewable &&
+                  channel
+                    .permissionsFor(
+                      interaction.guild.members.me
+                    )
+                    ?.has(
+                      PermissionFlagsBits.SendMessages
+                    )
+              );
+
+          const options =
+            [...channels.values()]
+              .slice(0, 25)
+              .map(
+                channel => ({
+
+                  label:
+                    `#${channel.name}`
+                      .slice(0, 100),
+
+                  value:
+                    channel.id
+
+                })
+              );
+
+          if (!options.length) {
+
+            return interaction.reply({
+
+              content:
+                'I cannot find a channel where I am allowed to send messages.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          return interaction.reply({
+
+            content:
+              'Choose the channel where the embed should be sent:',
+
+            components: [
+
+              new ActionRowBuilder()
+                .addComponents(
+
+                  new StringSelectMenuBuilder()
+                    .setCustomId(
+                      'embed_send_channel'
+                    )
+                    .setPlaceholder(
+                      'Select a channel...'
+                    )
+                    .addOptions(
+                      options
+                    )
+
+                )
+
+            ],
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        return;
+      }
+
+      // ========================================================
+      // EMBED FIELD SELECT
+      // ========================================================
+
+      if (
+        interaction.isStringSelectMenu() &&
+        interaction.customId ===
+          'embed_field_select'
+      ) {
+
+        const index =
+          Number(
+            interaction.values[0]
+          );
+
+        return interaction.reply(
+          embedFieldActions(
+            index,
+            interaction.user.id
+          )
+        );
+
+      }
+
+      // ========================================================
+      // EMBED TEMPLATE SELECT
+      // ========================================================
+
+      if (
+        interaction.isStringSelectMenu() &&
+        interaction.customId ===
+          'embed_template_select'
+      ) {
+
+        const templates =
+          embedTemplates.get(
+            interaction.user.id
+          ) || {};
+
+        const template =
+          templates[
+            interaction.values[0]
+          ];
+
+        if (!template) {
+
+          return interaction.reply({
+
+            content:
+              'That template no longer exists.',
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        embedDrafts.set(
+          interaction.user.id,
+          cloneData(template)
+        );
+
+        return interaction.update(
+          embedStudioDashboard(
+            interaction.user.id
+          )
+        );
+
+      }
+
+      // ========================================================
+      // EMBED CHANNEL SELECT
+      // ========================================================
+
+      if (
+        interaction.isStringSelectMenu() &&
+        interaction.customId ===
+          'embed_send_channel'
+      ) {
+
+        if (!interaction.guild) {
+          return;
+        }
+
+        const channel =
+          interaction.guild.channels.cache.get(
+            interaction.values[0]
+          );
+
+        if (
+          !channel ||
+          !channel.isTextBased()
+        ) {
+
+          return interaction.update({
+
+            content:
+              'That channel could not be found.',
+
+            components: []
+
+          });
+
+        }
+
+        const draft =
+          getEmbedDraft(
+            interaction.user.id
+          );
+
+        const errors =
+          draft.embeds.flatMap(
+            (embed, index) =>
+              validateEmbed(embed)
+                .map(
+                  error =>
+                    `Embed ${index + 1}: ${error}`
+                )
+          );
+
+        if (errors.length) {
+
+          return interaction.update({
+
+            content:
+              errors
+                .map(
+                  error =>
+                    `• ${error}`
+                )
+                .join('\n'),
+
+            components: []
+
+          });
+
+        }
+
+        const embeds =
+          draft.embeds.map(
+            buildUserEmbed
+          );
+
+        const allowedMentions = {
+
+          parse: [
+
+            ...(draft.allowedMentions.users
+              ? ['users']
+              : []),
+
+            ...(draft.allowedMentions.roles
+              ? ['roles']
+              : []),
+
+            ...(draft.allowedMentions.everyone
+              ? ['everyone']
+              : [])
+
+          ]
+
+        };
+
+        await channel.send({
+
+          content:
+            draft.content ||
+            undefined,
+
+          embeds,
+
+          allowedMentions
+
+        });
+
+        return interaction.update({
+
+          content:
+            `✅ Embed message sent successfully to ${channel}.`,
+
+          components: []
+
+        });
+
+      }
+
+      // ========================================================
+      // EMBED MODALS
+      // ========================================================
+
+      if (
+        interaction.isModalSubmit() &&
+        interaction.customId.startsWith(
+          'embed_modal_'
+        )
+      ) {
+
+        const userId =
+          interaction.user.id;
+
+        const draft =
+          getEmbedDraft(userId);
+
+        const embed =
+          currentEmbed(userId);
+
+        // ------------------------------------------------------
+        // BASIC
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_basic'
+        ) {
+
+          const title =
+            getModalValue(
+              interaction,
+              'title'
+            );
+
+          const description =
+            getModalValue(
+              interaction,
+              'description'
+            );
+
+          const color =
+            getModalValue(
+              interaction,
+              'color'
+            );
+
+          const url =
+            getModalValue(
+              interaction,
+              'url'
+            );
+
+          const timestamp =
+            getModalValue(
+              interaction,
+              'timestamp'
+            );
+
+          if (
+            color &&
+            !normalizeColor(color)
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Color must be a six-digit hex value such as `#FFFFFF` or `5865F2`.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          if (
+            url &&
+            !validHttpUrl(url)
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'The title URL must be a valid HTTP/HTTPS URL.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          embed.title =
+            title.slice(0, 256);
+
+          embed.description =
+            description.slice(0, 4096);
+
+          embed.color =
+            color
+              .replace(/^#/, '')
+              .toUpperCase() ||
+            'FFFFFF';
+
+          embed.url =
+            url.slice(0, 1024);
+
+          embed.timestamp =
+            /^(yes|y|true|on)$/i.test(
+              timestamp
+            );
+
+          return interaction.reply(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // MEDIA
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_media'
+        ) {
+
+          const image =
+            getModalValue(
+              interaction,
+              'image'
+            );
+
+          const thumbnail =
+            getModalValue(
+              interaction,
+              'thumbnail'
+            );
+
+          if (
+            !validHttpUrl(image) ||
+            !validHttpUrl(thumbnail)
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Image and thumbnail URLs must be valid HTTP/HTTPS URLs.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          embed.image =
+            image.slice(0, 1024);
+
+          embed.thumbnail =
+            thumbnail.slice(0, 1024);
+
+          return interaction.reply(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // AUTHOR
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_author'
+        ) {
+
+          const name =
+            getModalValue(
+              interaction,
+              'name'
+            );
+
+          const url =
+            getModalValue(
+              interaction,
+              'url'
+            );
+
+          const icon =
+            getModalValue(
+              interaction,
+              'icon'
+            );
+
+          if (
+            !validHttpUrl(url) ||
+            !validHttpUrl(icon)
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Author URLs must be valid HTTP/HTTPS URLs.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          embed.author = {
+
+            name:
+              name.slice(0, 256),
+
+            url:
+              url.slice(0, 1024),
+
+            iconURL:
+              icon.slice(0, 1024)
+
+          };
+
+          return interaction.reply(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // FOOTER
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_footer'
+        ) {
+
+          const text =
+            getModalValue(
+              interaction,
+              'text'
+            );
+
+          const icon =
+            getModalValue(
+              interaction,
+              'icon'
+            );
+
+          if (
+            !validHttpUrl(icon)
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Footer icon URL must be a valid HTTP/HTTPS URL.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          embed.footer = {
+
+            text:
+              text.slice(0, 2048),
+
+            iconURL:
+              icon.slice(0, 1024)
+
+          };
+
+          return interaction.reply(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // MESSAGE CONTENT
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_message'
+        ) {
+
+          draft.content =
+            getModalValue(
+              interaction,
+              'content'
+            ).slice(0, 2000);
+
+          return interaction.reply(
+            embedStudioDashboard(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // ADD FIELD
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_field_add'
+        ) {
+
+          if (
+            embed.fields.length >= 25
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Discord allows a maximum of 25 fields per embed.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          const name =
+            getModalValue(
+              interaction,
+              'name'
+            );
+
+          const value =
+            getModalValue(
+              interaction,
+              'value'
+            );
+
+          const inline =
+            getModalValue(
+              interaction,
+              'inline'
+            );
+
+          if (
+            !name ||
+            !value
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Field name and value are required.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          if (
+            name.length > 256 ||
+            value.length > 1024
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Field names have a 256-character limit and field values have a 1024-character limit.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          embed.fields.push({
+
+            name:
+              name.slice(0, 256),
+
+            value:
+              value.slice(0, 1024),
+
+            inline:
+              /^(yes|y|true|on)$/i.test(
+                inline
+              )
+
+          });
+
+          return interaction.reply(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // EDIT FIELD
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId.startsWith(
+            'embed_modal_field_edit_'
+          )
+        ) {
+
+          const index =
+            Number(
+              interaction.customId
+                .split('_')
+                .pop()
+            );
+
+          if (
+            !embed.fields[index]
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'That field no longer exists.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          const name =
+            getModalValue(
+              interaction,
+              'name'
+            );
+
+          const value =
+            getModalValue(
+              interaction,
+              'value'
+            );
+
+          const inline =
+            getModalValue(
+              interaction,
+              'inline'
+            );
+
+          if (
+            name.length > 256 ||
+            value.length > 1024
+          ) {
+
+            return interaction.reply({
+
+              content:
+                'Field names have a 256-character limit and field values have a 1024-character limit.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          embed.fields[index] = {
+
+            name:
+              name.slice(0, 256),
+
+            value:
+              value.slice(0, 1024),
+
+            inline:
+              /^(yes|y|true|on)$/i.test(
+                inline
+              )
+
+          };
+
+          return interaction.reply(
+            embedFieldsPanel(
+              userId
+            )
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // JSON IMPORT
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_json'
+        ) {
+
+          const raw =
+            getModalValue(
+              interaction,
+              'json'
+            );
+
+          try {
+
+            const imported =
+              JSON.parse(raw);
+
+            let normalized;
+
+            if (
+              imported.embeds &&
+              Array.isArray(
+                imported.embeds
+              )
+            ) {
+
+              normalized =
+                imported;
+
+            } else {
+
+              normalized = {
+
+                content:
+                  imported.content ||
+                  '',
+
+                embeds: [
+                  imported
+                ],
+
+                allowedMentions: {
+                  users: false,
+                  roles: false,
+                  everyone: false
+                }
+
+              };
+
+            }
+
+            if (
+              !Array.isArray(
+                normalized.embeds
+              ) ||
+              !normalized.embeds.length
+            ) {
+
+              throw new Error(
+                'No embeds were found.'
+              );
+
+            }
+
+            normalized.embeds =
+              normalized.embeds
+                .slice(0, 10)
+                .map(
+                  importedEmbed => ({
+
+                    title:
+                      importedEmbed.title ||
+                      '',
+
+                    description:
+                      importedEmbed.description ||
+                      '',
+
+                    color:
+                      typeof importedEmbed.color === 'number'
+                        ? importedEmbed.color
+                            .toString(16)
+                            .padStart(6, '0')
+                            .toUpperCase()
+                        : String(
+                            importedEmbed.color ||
+                            'FFFFFF'
+                          )
+                            .replace(/^#/, '')
+                            .toUpperCase(),
+
+                    url:
+                      importedEmbed.url ||
+                      '',
+
+                    timestamp:
+                      Boolean(
+                        importedEmbed.timestamp
+                      ),
+
+                    author: {
+
+                      name:
+                        importedEmbed.author?.name ||
+                        '',
+
+                      url:
+                        importedEmbed.author?.url ||
+                        '',
+
+                      iconURL:
+                        importedEmbed.author?.icon_url ||
+                        importedEmbed.author?.iconURL ||
+                        ''
+
+                    },
+
+                    footer: {
+
+                      text:
+                        importedEmbed.footer?.text ||
+                        '',
+
+                      iconURL:
+                        importedEmbed.footer?.icon_url ||
+                        importedEmbed.footer?.iconURL ||
+                        ''
+
+                    },
+
+                    thumbnail:
+                      importedEmbed.thumbnail?.url ||
+                      importedEmbed.thumbnail ||
+                      '',
+
+                    image:
+                      importedEmbed.image?.url ||
+                      importedEmbed.image ||
+                      '',
+
+                    fields:
+                      Array.isArray(
+                        importedEmbed.fields
+                      )
+                        ? importedEmbed.fields
+                            .slice(0, 25)
+                            .map(
+                              field => ({
+
+                                name:
+                                  String(
+                                    field.name ||
+                                    ''
+                                  ).slice(0, 256),
+
+                                value:
+                                  String(
+                                    field.value ||
+                                    ''
+                                  ).slice(0, 1024),
+
+                                inline:
+                                  Boolean(
+                                    field.inline
+                                  )
+
+                              })
+                            )
+                        : []
+
+                  })
+                );
+
+            normalized.content =
+              String(
+                normalized.content ||
+                ''
+              ).slice(0, 2000);
+
+            normalized.allowedMentions = {
+
+              users:
+                Boolean(
+                  normalized.allowedMentions
+                    ?.users
+                ),
+
+              roles:
+                Boolean(
+                  normalized.allowedMentions
+                    ?.roles
+                ),
+
+              everyone:
+                Boolean(
+                  normalized.allowedMentions
+                    ?.everyone
+                )
+
+            };
+
+            embedDrafts.set(
+              userId,
+              normalized
+            );
+
+            return interaction.reply(
+              embedStudioDashboard(
+                userId
+              )
+            );
+
+          } catch (error) {
+
+            return interaction.reply({
+
+              content:
+                `Unable to import JSON: ${error.message}`,
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+        }
+
+        // ------------------------------------------------------
+        // SAVE TEMPLATE
+        // ------------------------------------------------------
+
+        if (
+          interaction.customId ===
+          'embed_modal_save_template'
+        ) {
+
+          const name =
+            getModalValue(
+              interaction,
+              'name'
+            );
+
+          if (!name) {
+
+            return interaction.reply({
+
+              content:
+                'Enter a template name.',
+
+              ephemeral:
+                true
+
+            });
+
+          }
+
+          if (
+            !embedTemplates.has(userId)
+          ) {
+
+            embedTemplates.set(
+              userId,
+              {}
+            );
+
+          }
+
+          const templates =
+            embedTemplates.get(
+              userId
+            );
+
+          templates[
+            name.slice(0, 100)
+          ] =
+            cloneData(
+              draft
+            );
+
+          return interaction.reply({
+
+            content:
+              `✅ Saved template **${name.slice(0, 100)}**.`,
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+      }
 
       // ========================================================
       // TICKET DROPDOWN
@@ -1212,22 +4503,18 @@ client.on(
 
         const channelName =
           subject.channelName
-
             .replace(
               '{user}',
               safeUsername
             )
-
             .replace(
               '{user.id}',
               interaction.user.id
             )
-
             .replace(
               '{subject}',
               selected
             )
-
             .replace(
               '{ticketid}',
               ticketId
@@ -1240,11 +4527,8 @@ client.on(
               guild.roles.everyone.id,
 
             deny: [
-
               PermissionFlagsBits.ViewChannel
-
             ]
-
           },
 
           {
@@ -1252,15 +4536,12 @@ client.on(
               interaction.user.id,
 
             allow: [
-
               PermissionFlagsBits.ViewChannel,
               PermissionFlagsBits.SendMessages,
               PermissionFlagsBits.ReadMessageHistory,
               PermissionFlagsBits.AttachFiles,
               PermissionFlagsBits.EmbedLinks
-
             ]
-
           }
 
         ];
@@ -1275,14 +4556,12 @@ client.on(
               roleId,
 
             allow: [
-
               PermissionFlagsBits.ViewChannel,
               PermissionFlagsBits.SendMessages,
               PermissionFlagsBits.ReadMessageHistory,
               PermissionFlagsBits.AttachFiles,
               PermissionFlagsBits.EmbedLinks,
               PermissionFlagsBits.ManageMessages
-
             ]
 
           });
@@ -1383,7 +4662,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -1396,9 +4674,7 @@ client.on(
           'claim_ticket'
       ) {
 
-        if (!interaction.channel) {
-          return;
-        }
+        if (!interaction.channel) return;
 
         if (
           !isStaff(
@@ -1487,7 +4763,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -1500,9 +4775,7 @@ client.on(
           'close_ticket'
       ) {
 
-        if (!interaction.channel) {
-          return;
-        }
+        if (!interaction.channel) return;
 
         const ownerId =
           getTicketOwner(
@@ -1590,7 +4863,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -1625,7 +4897,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -1641,9 +4912,7 @@ client.on(
         const channel =
           interaction.channel;
 
-        if (!channel) {
-          return;
-        }
+        if (!channel) return;
 
         const ownerId =
           getTicketOwner(channel);
@@ -1708,7 +4977,6 @@ client.on(
         });
 
         setTimeout(
-
           async () => {
 
             try {
@@ -1725,13 +4993,10 @@ client.on(
             }
 
           },
-
           5000
-
         );
 
         return;
-
       }
 
       // ========================================================
@@ -1826,7 +5091,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -1838,10 +5102,6 @@ client.on(
         interaction.customId ===
           'verify_member'
       ) {
-
-        // ------------------------------------------------------
-        // VERIFY CONFIGURATION CHECK
-        // ------------------------------------------------------
 
         if (
           !VERIFIED_ROLE_ID ||
@@ -1859,10 +5119,6 @@ client.on(
           });
 
         }
-
-        // ------------------------------------------------------
-        // FETCH THE MEMBER
-        // ------------------------------------------------------
 
         const guild =
           interaction.guild;
@@ -1886,24 +5142,111 @@ client.on(
             interaction.user.id
           );
 
-        // ------------------------------------------------------
-        // CHECK EXISTING ROLES
-        // ------------------------------------------------------
-
-        const alreadyVerified =
-          member.roles.cache.has(
-            VERIFIED_ROLE_ID
-          );
-
-        const alreadyCommunityMember =
-          member.roles.cache.has(
-            COMMUNITY_MEMBER_ROLE_ID
+        const botMember =
+          guild.members.me ||
+          await guild.members.fetch(
+            client.user.id
           );
 
         if (
-          alreadyVerified &&
-          alreadyCommunityMember
+          !botMember.permissions.has(
+            PermissionFlagsBits.ManageRoles
+          )
         ) {
+
+          return interaction.reply({
+
+            content:
+              'I cannot complete verification because I do not have **Manage Roles** permission.',
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        const verifiedRole =
+          guild.roles.cache.get(
+            VERIFIED_ROLE_ID
+          );
+
+        const communityRole =
+          guild.roles.cache.get(
+            COMMUNITY_MEMBER_ROLE_ID
+          );
+
+        if (!verifiedRole) {
+
+          return interaction.reply({
+
+            content:
+              `I could not find the Verified role (${VERIFIED_ROLE_ID}) in this server.`,
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        if (!communityRole) {
+
+          return interaction.reply({
+
+            content:
+              `I could not find the Community Member role (${COMMUNITY_MEMBER_ROLE_ID}) in this server.`,
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        const unassignable = [
+
+          verifiedRole,
+          communityRole
+
+        ].filter(
+          role =>
+            role.position >=
+            botMember.roles.highest.position
+        );
+
+        if (unassignable.length) {
+
+          return interaction.reply({
+
+            content:
+
+              '**Verification cannot assign the required roles.**\n\n' +
+
+              `Move the bot's highest role above: ${unassignable.map(role => `**${role.name}**`).join(', ')}.\n\n` +
+
+              'The bot also needs **Manage Roles** permission.',
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        const rolesToAdd = [
+
+          VERIFIED_ROLE_ID,
+          COMMUNITY_MEMBER_ROLE_ID
+
+        ].filter(
+          roleId =>
+            !member.roles.cache.has(
+              roleId
+            )
+        );
+
+        if (!rolesToAdd.length) {
 
           return interaction.reply({
 
@@ -1917,41 +5260,13 @@ client.on(
 
         }
 
-        // ------------------------------------------------------
-        // VERIFY ROLE
-        // ------------------------------------------------------
+        await member.roles.add(
 
-        if (!alreadyVerified) {
+          rolesToAdd,
 
-          await member.roles.add(
+          'Completed BlancoCountyRP verification'
 
-            VERIFIED_ROLE_ID,
-
-            'Completed BlancoCountyRP verification'
-
-          );
-
-        }
-
-        // ------------------------------------------------------
-        // COMMUNITY MEMBER ROLE
-        // ------------------------------------------------------
-
-        if (!alreadyCommunityMember) {
-
-          await member.roles.add(
-
-            COMMUNITY_MEMBER_ROLE_ID,
-
-            'Completed BlancoCountyRP verification'
-
-          );
-
-        }
-
-        // ------------------------------------------------------
-        // SUCCESS MESSAGE
-        // ------------------------------------------------------
+        );
 
         await interaction.reply({
 
@@ -1964,7 +5279,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2068,7 +5382,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2085,27 +5398,13 @@ client.on(
           createPanel({
 
             title:
-              'Verification',
+              'Blanco County Verification',
 
             content:
 
-              'Welcome to **Blanco County Roleplay**!\n\n' +
+              '> Welcome To **Blanco County Verification**, please verify to become a *Blanco County Civilian*.\n\n' +
 
-              'To gain access to the **rest of the server**, please complete verification.\n\n' +
-
-              '**How to verify:**\n' +
-              'Click the Verify button below.\n' +
-              'Make sure you have read the rules.\n' +
-              'Once verified, you will unlock all channels.\n\n' +
-
-              '**Why we verify:**\n' +
-              '• Prevent bots\n' +
-              '• Keep the community organized\n' +
-              '• Ensure members follow the rules\n\n' +
-
-              `If you have issues verifying, please contact a staff member in <#${VERIFICATION_SUPPORT_CHANNEL_ID}>.\n\n` +
-
-              '-# Thank you for joining and enjoy your stay.',
+              '*BlancoCountyRP - Focused On Realism, Professionalism, And More!*',
 
             topImage:
               VERIFICATION_BANNER_URL,
@@ -2146,7 +5445,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2186,7 +5484,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2231,7 +5528,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2279,7 +5575,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2327,7 +5622,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2383,7 +5677,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2425,6 +5718,9 @@ client.on(
               '**/verifypanel**\n' +
               'Send the verification panel.\n\n' +
 
+              '**/embed**\n' +
+              'Open the advanced customizable embed studio.\n\n' +
+
               '**/about**\n' +
               'Learn more about BlancoCountyRP.'
 
@@ -2442,7 +5738,6 @@ client.on(
         });
 
         return;
-
       }
 
       // ========================================================
@@ -2488,7 +5783,6 @@ client.on(
         });
 
         return;
-
       }
 
     } catch (error) {
@@ -2683,9 +5977,7 @@ async function registerCommands() {
     }
 
     throw error;
-
   }
-
 }
 
 // ============================================================
