@@ -59,38 +59,38 @@ const ABOUT_TEXT =
 // BOTTOM IMAGE
 // ============================================================
 
-const TOP_BANNER_URL = '';
-const BOTTOM_FOOTER_URL = '';
+const TOP_BANNER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(1).png';
+const BOTTOM_FOOTER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
 
 // ============================================================
 // VERIFICATION
 // ============================================================
 
-const VERIFIED_ROLE_ID = '';
+const VERIFIED_ROLE_ID = '1553091032781037608';
 
 const VERIFICATION_SUPPORT_CHANNEL_ID =
-  '1551088269767344268';
+  '1553090868691599402';
 
-const VERIFICATION_BANNER_URL = '';
-const VERIFICATION_BOTTOM_IMAGE_URL = '';
+const VERIFICATION_BANNER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(1).png';
+const VERIFICATION_BOTTOM_IMAGE_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
 
 // ============================================================
 // TICKET CONFIGURATION
 // ============================================================
 
-const TICKET_CATEGORY_ID = '';
+const TICKET_CATEGORY_ID = '1553091562454519929';
 
-const SERVER_STAFF_ROLE_ID = '';
-const SERVER_MANAGEMENT_ROLE_ID = '';
-const PARTNERSHIP_TEAM_ROLE_ID = '';
+const SERVER_STAFF_ROLE_ID = '1553091374428065903';
+const SERVER_MANAGEMENT_ROLE_ID = '1553091286926364672';
+const PARTNERSHIP_TEAM_ROLE_ID = '1553091195264172177';
 
-const COMMUNITY_MEMBER_ROLE_ID = '';
+const COMMUNITY_MEMBER_ROLE_ID = '1553091095749988402';
 
-const TICKET_TRANSCRIPT_CHANNEL_ID = '';
-const TICKET_FEEDBACK_CHANNEL_ID = '';
+const TICKET_TRANSCRIPT_CHANNEL_ID = '1553091667924357220';
+const TICKET_FEEDBACK_CHANNEL_ID = '1553091755836964994';
 
-const TICKET_BANNER_URL = '';
-const TICKET_BOTTOM_IMAGE_URL = '';
+const TICKET_BANNER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
+const TICKET_BOTTOM_IMAGE_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
 
 // ============================================================
 // TICKET SUBJECTS
