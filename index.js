@@ -2466,18 +2466,29 @@ client.on(
           });
         }
 
+        // IMPORTANT: The bot registers its commands globally at startup.
+        // Do NOT also register them as guild commands here, because Discord
+        // will show both copies in the server. Instead, clear any old
+        // guild-specific command override and refresh the global command set.
         await rest.put(
           Routes.applicationGuildCommands(
             applicationId,
             interaction.guild.id
           ),
           {
+            body: []
+          }
+        );
+
+        await rest.put(
+          Routes.applicationCommands(applicationId),
+          {
             body: commands
           }
         );
 
         console.log(
-          `[SYNC] ${interaction.user.tag} synchronized ${commands.length} commands to ${interaction.guild.name} (${interaction.guild.id}).`
+          `[SYNC] ${interaction.user.tag} refreshed ${commands.length} global commands and cleared guild-specific overrides for ${interaction.guild.name} (${interaction.guild.id}).`
         );
 
         return interaction.editReply({
@@ -2486,7 +2497,7 @@ client.on(
             `**Server:** ${interaction.guild.name}\n` +
             `**Commands:** ${commands.length}\n` +
             `**Application ID:** ${applicationId}\n\n` +
-            `The updated slash commands are now registered specifically for this server.`
+            `Any old server-specific command copies were removed. The bot now uses one global command set.`
         });
       }
 
