@@ -56,6 +56,32 @@ const ABOUT_TEXT =
   'Welcome to the start of **Blanco County, Texas**, made by a deputy who has a vision to create good-quality roleplays within his county! We seek a community that is looking to be a part of something new and great!';
 
 // ============================================================
+// DASHBOARD / FAQ
+// ============================================================
+
+const DASHBOARD_BANNER_URL = TOP_BANNER_URL;
+const DASHBOARD_BOTTOM_IMAGE_URL = BOTTOM_FOOTER_URL;
+
+// FAQ adapted from the KCRP FAQ panel, rebranded for BlancoCountyRP.
+const FAQ_TEXT =
+  '``❓`` **How do I join the Roblox server?**\n' +
+  '> Join through the session information when a session is active. Make sure your Roblox and Discord information follow BlancoCountyRP requirements.\n\n' +
+  '``❓`` **How do I verify in the server?**\n' +
+  '> Click the **Verify** button in the verification panel and follow the instructions.\n\n' +
+  '``❓`` **How do I apply for a department?**\n' +
+  '> Department applications are available through the server\'s department/application system when applications are open.\n\n' +
+  '``❓`` **Can I use any vehicle?**\n' +
+  '> No. Some vehicles may be restricted for roleplay purposes. Check the current In-Game Regulations and staff announcements for restrictions.\n\n' +
+  '``❓`` **What do I do if I see someone breaking rules?**\n' +
+  '> Gather appropriate evidence and report the situation through the proper support channel or ticket system.\n\n' +
+  '``❓`` **How do I appeal a moderation action?**\n' +
+  '> Open a **Management Support** ticket and provide the information requested by staff.\n\n' +
+  '``❓`` **How do I open a support ticket?**\n' +
+  '> Go to the BlancoCountyRP Support Hub and select the appropriate ticket type from the dropdown.\n\n' +
+  '``❓`` **How do I apply for a partnership?**\n' +
+  '> Open a **Management Support** ticket and select the partnership-related support option.';
+
+// ============================================================
 // GITHUB ASSETS
 // ============================================================
 
@@ -2300,6 +2326,15 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
+    .setName('dashboard')
+    .setDescription(
+      'Send the BlancoCountyRP dashboard and information menu.'
+    )
+    .setDefaultMemberPermissions(
+      PermissionFlagsBits.ManageGuild
+    ),
+
+  new SlashCommandBuilder()
     .setName('help')
     .setDescription(
       'View the bot commands.'
@@ -2466,29 +2501,18 @@ client.on(
           });
         }
 
-        // IMPORTANT: The bot registers its commands globally at startup.
-        // Do NOT also register them as guild commands here, because Discord
-        // will show both copies in the server. Instead, clear any old
-        // guild-specific command override and refresh the global command set.
         await rest.put(
           Routes.applicationGuildCommands(
             applicationId,
             interaction.guild.id
           ),
           {
-            body: []
-          }
-        );
-
-        await rest.put(
-          Routes.applicationCommands(applicationId),
-          {
             body: commands
           }
         );
 
         console.log(
-          `[SYNC] ${interaction.user.tag} refreshed ${commands.length} global commands and cleared guild-specific overrides for ${interaction.guild.name} (${interaction.guild.id}).`
+          `[SYNC] ${interaction.user.tag} synchronized ${commands.length} commands to ${interaction.guild.name} (${interaction.guild.id}).`
         );
 
         return interaction.editReply({
@@ -2497,7 +2521,7 @@ client.on(
             `**Server:** ${interaction.guild.name}\n` +
             `**Commands:** ${commands.length}\n` +
             `**Application ID:** ${applicationId}\n\n` +
-            `Any old server-specific command copies were removed. The bot now uses one global command set.`
+            `The updated slash commands are now registered specifically for this server.`
         });
       }
 
@@ -5758,6 +5782,152 @@ client.on(
       }
 
       // ========================================================
+      // /DASHBOARD
+      // ========================================================
+
+      if (
+        interaction.isChatInputCommand() &&
+        interaction.commandName ===
+          'dashboard'
+      ) {
+
+        if (
+          !interaction.memberPermissions?.has(
+            PermissionFlagsBits.ManageGuild
+          )
+        ) {
+          return interaction.reply({
+            content:
+              'You need **Manage Server** permission to use `/dashboard`.',
+            ephemeral: true
+          });
+        }
+
+        const container =
+          new ContainerBuilder()
+            .setAccentColor(BRAND_COLOR);
+
+        // Top banner — same visual structure as the reference dashboard.
+        addMedia(
+          container,
+          DASHBOARD_BANNER_URL
+        );
+
+        container.addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            '# BlancoCountyRP Dashboard\n\n' +
+            '**Welcome to BlancoCountyRP.**\n' +
+            'Welcome to **Blanco County, Texas**, one of ER:LC\'s newest roleplay communities. Our goal is to provide a quality, organized roleplay experience with professional departments, clear regulations, and a community built to grow.\n\n' +
+            '**Built by a Vision. Driven by Roleplay.**'
+          )
+        );
+
+        const menu =
+          new StringSelectMenuBuilder()
+            .setCustomId('bcrp_dashboard_select')
+            .setPlaceholder('Explore Blanco County')
+            .addOptions(
+              {
+                label: 'Server Guidelines',
+                description: 'View the BlancoCountyRP Discord regulations.',
+                value: 'discord_rules',
+                emoji: '☑️'
+              },
+              {
+                label: 'In-Game Guidelines',
+                description: 'View the BlancoCountyRP roleplay regulations.',
+                value: 'ingame_rules',
+                emoji: '▣'
+              },
+              {
+                label: 'Frequently Asked Questions',
+                description: 'View frequently asked questions about BlancoCountyRP.',
+                value: 'faq',
+                emoji: '💬'
+              }
+            );
+
+        container.addActionRowComponents(
+          new ActionRowBuilder().addComponents(menu)
+        );
+
+        addMedia(
+          container,
+          DASHBOARD_BOTTOM_IMAGE_URL
+        );
+
+        await interaction.reply({
+          flags: MessageFlags.IsComponentsV2,
+          components: [container]
+        });
+
+        return;
+      }
+
+      // ========================================================
+      // DASHBOARD SELECT MENU
+      // ========================================================
+
+      if (
+        interaction.isStringSelectMenu() &&
+        interaction.customId ===
+          'bcrp_dashboard_select'
+      ) {
+
+        const choice = interaction.values[0];
+
+        if (choice === 'discord_rules') {
+          const chunks = splitText(DISCORD_REGULATIONS_TEXT);
+          const panels = chunks.map((chunk, index) =>
+            createTextPanel({
+              title:
+                chunks.length > 1
+                  ? `Server Guidelines • ${index + 1}/${chunks.length}`
+                  : 'Server Guidelines',
+              content: chunk
+            })
+          );
+
+          return interaction.reply({
+            flags: MessageFlags.IsComponentsV2,
+            components: panels
+          });
+        }
+
+        if (choice === 'ingame_rules') {
+          const chunks = splitText(INGAME_REGULATIONS_TEXT);
+          const panels = chunks.map((chunk, index) =>
+            createTextPanel({
+              title:
+                chunks.length > 1
+                  ? `In-Game Guidelines • ${index + 1}/${chunks.length}`
+                  : 'In-Game Guidelines',
+              content: chunk
+            })
+          );
+
+          return interaction.reply({
+            flags: MessageFlags.IsComponentsV2,
+            components: panels
+          });
+        }
+
+        if (choice === 'faq') {
+          const faqPanel = createPanel({
+            title: 'Frequently Asked Questions',
+            content: FAQ_TEXT,
+            topImage: TOP_BANNER_URL,
+            bottomImage: BOTTOM_FOOTER_URL
+          });
+
+          return interaction.reply({
+            flags: MessageFlags.IsComponentsV2,
+            components: [faqPanel]
+          });
+        }
+      }
+
+      // ========================================================
       // /HELP
       // ========================================================
 
@@ -5780,6 +5950,9 @@ client.on(
 
               '**/server**\n' +
               'View BlancoCountyRP server information.\n\n' +
+
+              '**/dashboard**\n' +
+              'Send the BlancoCountyRP dashboard and information menu.\n\n' +
 
               '**/rules**\n' +
               'View the Discord regulations.\n\n' +
