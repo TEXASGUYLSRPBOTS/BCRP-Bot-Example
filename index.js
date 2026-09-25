@@ -2327,6 +2327,15 @@ const commands = [
     .setName('embed')
     .setDescription(
       'Open the advanced customizable embed studio.'
+    ),
+
+  new SlashCommandBuilder()
+    .setName('sync')
+    .setDescription(
+      'Synchronize all slash commands to this server immediately.'
+    )
+    .setDefaultMemberPermissions(
+      PermissionFlagsBits.Administrator
     )
 
 ].map(
@@ -2422,6 +2431,64 @@ client.on(
   async interaction => {
 
     try {
+
+      // ========================================================
+      // /SYNC
+      // ========================================================
+
+      if (
+        interaction.isChatInputCommand() &&
+        interaction.commandName === 'sync'
+      ) {
+
+        if (!interaction.guild) {
+          return interaction.reply({
+            content: 'The `/sync` command can only be used inside a server.',
+            ephemeral: true
+          });
+        }
+
+        if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+          return interaction.reply({
+            content: 'You need **Administrator** permission to use `/sync`.',
+            ephemeral: true
+          });
+        }
+
+        await interaction.deferReply({ ephemeral: true });
+
+        const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
+        const applicationId = client.user?.id || CLIENT_ID;
+
+        if (!applicationId) {
+          return interaction.editReply({
+            content: 'Unable to determine the bot application ID.'
+          });
+        }
+
+        await rest.put(
+          Routes.applicationGuildCommands(
+            applicationId,
+            interaction.guild.id
+          ),
+          {
+            body: commands
+          }
+        );
+
+        console.log(
+          `[SYNC] ${interaction.user.tag} synchronized ${commands.length} commands to ${interaction.guild.name} (${interaction.guild.id}).`
+        );
+
+        return interaction.editReply({
+          content:
+            `**Commands synchronized successfully.**\n\n` +
+            `**Server:** ${interaction.guild.name}\n` +
+            `**Commands:** ${commands.length}\n` +
+            `**Application ID:** ${applicationId}\n\n` +
+            `The updated slash commands are now registered specifically for this server.`
+        });
+      }
 
       // ========================================================
       // ADVANCED /EMBED
