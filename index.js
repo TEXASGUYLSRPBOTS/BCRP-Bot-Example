@@ -1,5 +1,5 @@
 // ============================================================
-// BlancoCountyRP | Whitelisted
+// Blanco County RP Operations
 // Discord Bot
 // Built by a Vision. Driven by Roleplay.
 // ============================================================
@@ -29,7 +29,7 @@ import {
 // BASIC CONFIGURATION
 // ============================================================
 
-const BOT_NAME = 'BlancoCountyRP | Whitelisted';
+const BOT_NAME = 'Blanco County RP Operations';
 const SERVER_NAME = 'BlancoCountyRP | Whitelisted';
 
 const BRAND_COLOR = 0xFFFFFF;
@@ -50,47 +50,62 @@ const ABOUT_TEXT =
   'Welcome to the start of **Blanco County, Texas**, made by a deputy who has a vision to create good-quality roleplays within his county! We seek a community that is looking to be a part of something new and great!';
 
 // ============================================================
-// GLOBAL IMAGES
-//
-// Add your image URLs later.
-// Every visual panel supports:
-// TOP BANNER
-// CONTENT
-// BOTTOM IMAGE
+// GITHUB ASSETS
+// IMPORTANT: These are RAW GitHub URLs, not /blob/ URLs.
 // ============================================================
 
-const TOP_BANNER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(1).png';
-const BOTTOM_FOOTER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
+const TOP_BANNER_URL =
+  'https://raw.githubusercontent.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/main/assets/discord-banner%20(1).png';
+
+const BOTTOM_FOOTER_URL =
+  'https://raw.githubusercontent.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/main/assets/discord-banner%20(2).png';
 
 // ============================================================
 // VERIFICATION
 // ============================================================
 
-const VERIFIED_ROLE_ID = '1553091032781037608';
+const VERIFIED_ROLE_ID =
+  '1553091032781037608';
 
 const VERIFICATION_SUPPORT_CHANNEL_ID =
   '1553090868691599402';
 
-const VERIFICATION_BANNER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(1).png';
-const VERIFICATION_BOTTOM_IMAGE_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
+const VERIFICATION_BANNER_URL =
+  TOP_BANNER_URL;
+
+const VERIFICATION_BOTTOM_IMAGE_URL =
+  BOTTOM_FOOTER_URL;
 
 // ============================================================
-// TICKET CONFIGURATION
+// TICKETS
 // ============================================================
 
-const TICKET_CATEGORY_ID = '1553091562454519929';
+const TICKET_CATEGORY_ID =
+  '1553091562454519929';
 
-const SERVER_STAFF_ROLE_ID = '1553091374428065903';
-const SERVER_MANAGEMENT_ROLE_ID = '1553091286926364672';
-const PARTNERSHIP_TEAM_ROLE_ID = '1553091195264172177';
+const SERVER_STAFF_ROLE_ID =
+  '1553091374428065903';
 
-const COMMUNITY_MEMBER_ROLE_ID = '1553091095749988402';
+const SERVER_MANAGEMENT_ROLE_ID =
+  '1553091286926364672';
 
-const TICKET_TRANSCRIPT_CHANNEL_ID = '1553091667924357220';
-const TICKET_FEEDBACK_CHANNEL_ID = '1553091755836964994';
+const PARTNERSHIP_TEAM_ROLE_ID =
+  '1553091195264172177';
 
-const TICKET_BANNER_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
-const TICKET_BOTTOM_IMAGE_URL = 'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/discord-banner%20(2).png';
+const COMMUNITY_MEMBER_ROLE_ID =
+  '1553091095749988402';
+
+const TICKET_TRANSCRIPT_CHANNEL_ID =
+  '1553091667924357220';
+
+const TICKET_FEEDBACK_CHANNEL_ID =
+  '1553091755836964994';
+
+const TICKET_BANNER_URL =
+  TOP_BANNER_URL;
+
+const TICKET_BOTTOM_IMAGE_URL =
+  BOTTOM_FOOTER_URL;
 
 // ============================================================
 // TICKET SUBJECTS
@@ -115,7 +130,7 @@ const TICKET_SUBJECTS = {
     message:
       '**General Support**\n\n' +
 
-      'Do not ping support staff, remain respectful at all times.\n\n' +
+      'Do not ping support staff. Remain respectful at all times.\n\n' +
 
       '**Basic Format:**\n\n' +
 
@@ -151,7 +166,7 @@ const TICKET_SUBJECTS = {
     message:
       '**Management Support**\n\n' +
 
-      'Do not ping management staff, remain respectful at all times.\n\n' +
+      'Do not ping management staff. Remain respectful at all times.\n\n' +
 
       '**Basic Format:**\n\n' +
 
@@ -168,6 +183,7 @@ const TICKET_SUBJECTS = {
       '*BlancoCountyRP*\n' +
       '*Director G. McCoy*'
   }
+
 };
 
 // ============================================================
@@ -176,55 +192,55 @@ const TICKET_SUBJECTS = {
 
 const DISCORD_REGULATIONS_TEXT =
   '**Discord Guidelines:**\n' +
-  'By joining, you agree to follow: ➤ [Discord Terms of Service](https://discord.com/terms) ➤ [Discord Community Guidelines](https://discord.com/guidelines)\n\n' +
+  'By joining, you agree to follow the [Discord Terms of Service](https://discord.com/terms) and [Discord Community Guidelines](https://discord.com/guidelines).\n\n' +
 
-  '**1 Respect**\n' +
-  'Treat all members respectfully. No harassment, hate speech, or discrimination.\n' +
+  '**1. Respect**\n' +
+  'Treat all members respectfully. No harassment, hate speech, or discrimination.\n\n' +
 
-  '**2 Common Sense**\n' +
-  'Use good judgment. Do not spam, troll, or provoke arguments.\n' +
+  '**2. Common Sense**\n' +
+  'Use good judgment. Do not spam, troll, or intentionally provoke arguments.\n\n' +
 
-  '**3 NSFW / Inappropriate Content**\n' +
-  'No adult, gory, or offensive content. This applies to messages, avatars, and nicknames.\n' +
+  '**3. Inappropriate Content**\n' +
+  'No adult, graphic, or offensive content. This applies to messages, avatars, and nicknames.\n\n' +
 
-  '**4 Voice Chat Rules**\n' +
-  'No mic spam, soundboards, or disruptive behavior - this will result in a VC ban.\n' +
+  '**4. Voice Chat Rules**\n' +
+  'No mic spam, soundboards, or disruptive behavior.\n\n' +
 
-  '**5 Impersonation**\n' +
-  'Do not impersonate staff, bots, or other members.\n' +
+  '**5. Impersonation**\n' +
+  'Do not impersonate staff, bots, or other members.\n\n' +
 
-  '**6 Advertising**\n' +
-  'No advertising external servers, products, or services without permission.\n' +
+  '**6. Advertising**\n' +
+  'No advertising external servers, products, or services without permission.\n\n' +
 
-  '**7 Malicious Content**\n' +
-  'No viruses, scripts, or suspicious links. Respect community safety.\n' +
+  '**7. Malicious Content**\n' +
+  'No viruses, malicious scripts, or suspicious links.\n\n' +
 
-  '**8 Staff Instructions**\n' +
-  'Follow directions given by staff, do not argue with staff decisions in public channels.\n\n' +
+  '**8. Staff Instructions**\n' +
+  'Follow directions given by staff. Public arguments regarding staff decisions are not permitted.\n\n' +
 
   '**Moderation System**\n' +
   '• Warnings → Minor Infractions\n' +
-  '• Mutes → Failing to listen to staff or continuing arguments\n' +
+  '• Mutes → Continued disruption or failure to follow instructions\n' +
   '• Kicks → Moderate or repeated violations\n' +
   '• Bans → Severe violations\n\n' +
 
-  '**9 Name Rules**\n' +
-  'Usernames must be your Roblox username.\n' +
+  '**9. Name Rules**\n' +
+  'Usernames must follow community requirements.\n\n' +
 
-  '**10 Channel Usage**\n' +
-  'Use channels for their intended purpose. Do not derail conversations or flood chats.\n' +
+  '**10. Channel Usage**\n' +
+  'Use channels for their intended purpose. Do not derail conversations or flood chats.\n\n' +
 
-  '**11 Bot Usage**\n' +
-  'Do not abuse bots or spam commands.\n' +
+  '**11. Bot Usage**\n' +
+  'Do not abuse bots or spam commands.\n\n' +
 
-  '**12 Alternate Accounts**\n' +
-  'Do not use alt accounts to evade punishment or gain roles.\n' +
+  '**12. Alternate Accounts**\n' +
+  'Do not use alternate accounts to evade punishment or gain unauthorized roles.\n\n' +
 
-  '**13 Unlisted Infractions**\n' +
-  'Any behavior not listed but deemed disruptive by staff may result in moderation.\n' +
+  '**13. Unlisted Infractions**\n' +
+  'Behavior not specifically listed may still result in moderation when it disrupts the community.\n\n' +
 
-  '**14 Terms of Service Violations**\n' +
-  'Breaking Discord ToS will result in a ban.';
+  '**14. Terms of Service Violations**\n' +
+  'Discord Terms of Service violations may result in removal from the community.';
 
 // ============================================================
 // IN-GAME REGULATIONS
@@ -232,94 +248,63 @@ const DISCORD_REGULATIONS_TEXT =
 
 const INGAME_REGULATIONS_TEXT =
   '**Game Guidelines**\n' +
-  'By joining, you agree to follow: [Roblox Terms of Service](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use)\n\n' +
+  'By joining, you agree to follow the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use).\n\n' +
 
-  '**1 Respect**\n' +
-  'Be kind and courteous. Disrespect or harassment will not be tolerated.\n' +
+  '**1. Respect**\n' +
+  'Be kind and courteous. Disrespect and harassment are not permitted.\n\n' +
 
-  '**2 Common Sense**\n' +
-  "If it wouldn't happen in real life, don't do it (e.g. off-roading a McLaren at 130 MPH).\n" +
+  '**2. Common Sense**\n' +
+  'Roleplay should remain believable and appropriate for the situation.\n\n' +
 
-  '**3 Fail Roleplay (FRP)**\n' +
-  'Unrealistic actions, for example; cuff-rushing, failing to roleplay PITs, etc - Also includes unrealistic UGC emotes.\n' +
+  '**3. Fail Roleplay (FRP)**\n' +
+  'Unrealistic actions that negatively affect roleplay are prohibited.\n\n' +
 
-  '**4 Fear Roleplay**\n' +
-  'Act like your character has fear. Example: Do not run if a gun is aimed at you.\n' +
+  '**4. Fear Roleplay**\n' +
+  'Players should appropriately roleplay fear and danger during situations.\n\n' +
 
-  '**5 RDM / VDM**\n' +
-  'No random killing or vehicular attacks.\n' +
+  '**5. RDM / VDM**\n' +
+  'Random killing and intentionally using vehicles to attack players are prohibited.\n\n' +
 
-  '**6 New Life Rule (NLR)**\n' +
-  'After death, forget previous roleplays.\n' +
+  '**6. New Life Rule (NLR)**\n' +
+  'After death, players should not use information from their previous roleplay situation.\n\n' +
 
-  '**7 RP Permissions**\n' +
-  'Major RP setups such as hostages, highway closures, and blockades must be approved by a Moderator.\n' +
+  '**7. RP Permissions**\n' +
+  'Major roleplay setups such as hostages, highway closures, and blockades must be approved by authorized staff.\n\n' +
 
-  '**8 Regulation Usage**\n' +
-  'Use only official server regulations. Do not use WL liveries if you are not WL.\n\n' +
+  '**8. Regulation Usage**\n' +
+  'Use only official server regulations. Department restrictions must be respected.\n\n' +
 
-  '**Moderation System:**\n' +
+  '**Moderation System**\n' +
   '• Warnings → Minor Infractions\n' +
-  '• Kicks → Moderate Infractions / 3x Warnings\n' +
-  '• Bans → Severe Infractions / 2x Kicks\n\n' +
+  '• Kicks → Moderate Infractions / repeated warnings\n' +
+  '• Bans → Severe or repeated infractions\n\n' +
 
-  '**9 Moderation Evidence**\n' +
-  'Video proof is required to report rule-breaking. Troll reports will result in moderation.\n' +
+  '**9. Moderation Evidence**\n' +
+  'Video proof is required when reporting rule-breaking whenever reasonably possible. False or intentionally misleading reports may result in moderation.\n\n' +
 
-  '**10 Jurisdiction**\n' +
-  'Stay within your department jurisdiction. Department jurisdiction must be respected during roleplay.\n' +
+  '**10. Jurisdiction**\n' +
+  'Stay within your department jurisdiction. Department jurisdiction must be respected during roleplay.\n\n' +
 
-  '**11 Exclusive Perks**\n' +
-  'Boosters get access to prestige cars.\n' +
+  '**11. Exclusive Perks**\n' +
+  'Community perks are subject to the current server rules and staff decisions.\n\n' +
 
-  '**12 Safezones**\n' +
-  'No RP in protected areas: LEO spawns, civilian spawns, FD spawns or the gun store.\n' +
+  '**12. Safezones**\n' +
+  'No roleplay in protected areas such as designated department spawns and other areas identified by staff.\n\n' +
 
-  '**13 Avatar Standards**\n' +
-  'Avatars must be realistic. Troll, animal (excluding fursuits), or discriminatory styles are not allowed.\n' +
+  '**13. Avatar Standards**\n' +
+  'Avatars must remain appropriate and reasonably realistic for the roleplay environment.\n\n' +
 
-  '**14 Unlisted Infractions**\n' +
-  'Disruptive behavior not listed may still result in moderation.\n' +
+  '**14. Unlisted Infractions**\n' +
+  'Disruptive behavior not listed may still result in moderation.\n\n' +
 
-  '**15 Terms of Service**\n' +
-  'Breaking Roblox or PRC ToS is an instant ban.\n\n' +
+  '**15. Terms of Service**\n' +
+  'Breaking Roblox or applicable platform Terms of Service may result in removal from the community.\n\n' +
 
-  '**Banned Items & Booster Vehicles**\n\n' +
+  '**Restricted Items & Roleplays**\n' +
+  'Refer to the current official BlancoCountyRP restricted-item list and staff announcements for the current restrictions.\n\n' +
 
-  '-# Booster Vehicles\n' +
-  '> -# - Surrey 650S\n' +
-  '> -# - 2022 Celestial Type-5\n' +
-  '> -# - 2022 Celestial Type-7\n' +
-  '> -# - Takeo Experience\n' +
-  '> -# - 2020 Averon LM\n' +
-  '> -# - 2020 Averon LM-R\n' +
-  '> -# - 2016 Chevlon Amigo LZR\n' +
-  '> -# - 2014 Chevlon Corbeta RZR\n\n' +
-
-  '-# These vehicles are banned due to their speeds and impact on law enforcement roleplay. Staff may revoke vehicle permissions if rules are being broken.\n\n' +
-
-  '-# Banned Guns/Weapons\n' +
-  '> -# - M249\n' +
-  '> -# - Remington MSR\n' +
-  '> -# - PPSH 41\n' +
-  '> -# - Remington 700\n\n' +
-
-  '-# Banned LEO Guns/Weapons\n' +
-  '> -# - SPAS 12\n' +
-  '> -# - Model 29\n' +
-  '> -# - Orsis T 5000\n' +
-  '> -# - Benelli M4\n' +
-  '> -# - G36C\n' +
-  '> -# - Type 89\n' +
-  '> -# - MP5\n\n' +
-
-  '-# Banned Roleplays\n' +
-  '> -# - Homeless Shelter RPs\n' +
-  '> -# - Self-Harm RPs\n' +
-  '> -# - Bomb/Terrorist RPs\n' +
-  '> -# - Sexual RPs\n' +
-  '> -# - Hitman RPs\n' +
-  '> -# - Corrupt LEO RPs';
+  '**Restricted Roleplays**\n' +
+  'Roleplays involving sexual content, graphic content, terrorism/bomb scenarios, or other prohibited content are not allowed.';
 
 // ============================================================
 // DEPARTMENTS
@@ -368,7 +353,9 @@ function addMedia(container, url) {
         }
       });
 
-  container.addMediaGalleryComponents(gallery);
+  container.addMediaGalleryComponents(
+    gallery
+  );
 
   return container;
 }
@@ -424,34 +411,38 @@ function createTextPanel({
 
 }
 
-function splitText(text, maxLength = 3800) {
+function splitText(
+  text,
+  maxLength = 3500
+) {
 
   const chunks = [];
-
   let current = '';
 
   for (const line of text.split('\n')) {
 
+    const next =
+      `${current}${line}\n`;
+
     if (
-      (current + line + '\n').length >
-      maxLength
+      next.length > maxLength &&
+      current.trim()
     ) {
 
-      if (current.trim()) {
-        chunks.push(
-          current.trim()
-        );
-      }
+      chunks.push(
+        current.trim()
+      );
 
       current =
         `${line}\n`;
 
     } else {
 
-      current +=
-        `${line}\n`;
+      current =
+        next;
 
     }
+
   }
 
   if (current.trim()) {
@@ -461,6 +452,25 @@ function splitText(text, maxLength = 3800) {
   }
 
   return chunks;
+}
+
+// ============================================================
+// V2 STATUS PANEL
+// Used when a V2 message needs to be updated.
+// ============================================================
+
+function createStatusPanel(
+  title,
+  content
+) {
+
+  return createPanel({
+    title,
+    content,
+    topImage: TICKET_BANNER_URL,
+    bottomImage: TICKET_BOTTOM_IMAGE_URL
+  });
+
 }
 
 // ============================================================
@@ -517,16 +527,14 @@ function getTicketID(channel) {
 
 function isStaff(member) {
 
-  if (!member?.roles) {
+  if (!member?.roles?.cache) {
     return false;
   }
 
   const staffRoles = [
-
     SERVER_STAFF_ROLE_ID,
     SERVER_MANAGEMENT_ROLE_ID,
     PARTNERSHIP_TEAM_ROLE_ID
-
   ].filter(Boolean);
 
   return staffRoles.some(
@@ -556,6 +564,9 @@ async function sendTranscript(
     );
 
   if (!transcriptChannel) {
+    console.log(
+      'Transcript channel not found.'
+    );
     return;
   }
 
@@ -593,22 +604,46 @@ async function sendTranscript(
 
   for (const message of sorted) {
 
+    const content =
+      message.content ||
+      '[Embed/Attachment/Component Message]';
+
     transcript +=
       `[${new Date(
         message.createdTimestamp
       ).toLocaleString()}] ` +
-
       `${message.author.tag}: ` +
+      `${content}\n`;
 
-      `${message.content || '[Embed/Attachment]'}\n`;
+    if (
+      message.attachments.size > 0
+    ) {
+
+      transcript +=
+        `Attachments: ${[
+          ...message.attachments.values()
+        ]
+          .map(
+            attachment =>
+              attachment.url
+          )
+          .join(', ')}\n`;
+
+    }
+
+    transcript += '\n';
   }
 
-  if (transcript.length > 900000) {
+  if (
+    transcript.length > 900000
+  ) {
+
     transcript =
       transcript.slice(
         0,
         899000
       );
+
   }
 
   await transcriptChannel.send({
@@ -630,6 +665,7 @@ async function sendTranscript(
     ]
 
   });
+
 }
 
 // ============================================================
@@ -734,6 +770,7 @@ async function sendFeedbackDM(
     );
 
   }
+
 }
 
 // ============================================================
@@ -823,11 +860,15 @@ client.once(
   () => {
 
     console.log(
-      '=============================================='
+      '=================================================='
     );
 
     console.log(
-      `${BOT_NAME} is online!`
+      ` ${BOT_NAME}`
+    );
+
+    console.log(
+      '=================================================='
     );
 
     console.log(
@@ -839,7 +880,15 @@ client.once(
     );
 
     console.log(
-      '=============================================='
+      `Status: ${STATUS}`
+    );
+
+    console.log(
+      `Commands Loaded: ${commands.length}`
+    );
+
+    console.log(
+      '=================================================='
     );
 
     client.user.setPresence({
@@ -920,7 +969,7 @@ client.on(
         }
 
         // ------------------------------------------------------
-        // REQUIRED ROLE
+        // REQUIRED COMMUNITY ROLE
         // ------------------------------------------------------
 
         if (
@@ -933,7 +982,7 @@ client.on(
           return interaction.editReply({
 
             content:
-              'You do not have the required role to open a ticket.'
+              'You do not have the required community member role to open a ticket.'
 
           });
 
@@ -951,7 +1000,9 @@ client.on(
                 channel.type !==
                 ChannelType.GuildText
               ) {
+
                 return false;
+
               }
 
               return (
@@ -985,7 +1036,7 @@ client.on(
             .slice(-6);
 
         // ------------------------------------------------------
-        // USERNAME
+        // SAFE USERNAME
         // ------------------------------------------------------
 
         const safeUsername =
@@ -998,7 +1049,8 @@ client.on(
             .slice(
               0,
               20
-            );
+            ) ||
+          'member';
 
         // ------------------------------------------------------
         // CHANNEL NAME
@@ -1081,7 +1133,7 @@ client.on(
         }
 
         // ------------------------------------------------------
-        // CREATE CHANNEL
+        // CREATE TICKET CHANNEL
         // ------------------------------------------------------
 
         const ticketChannel =
@@ -1108,6 +1160,9 @@ client.on(
 
         // ------------------------------------------------------
         // TICKET PANEL
+        //
+        // IMPORTANT:
+        // Components V2 cannot use top-level "content".
         // ------------------------------------------------------
 
         const ticketPanel =
@@ -1117,15 +1172,14 @@ client.on(
               subject.label,
 
             content:
+              `Ticket opened by ${interaction.user}.\n\n` +
               subject.message,
 
             topImage:
-              TICKET_BANNER_URL ||
-              TOP_BANNER_URL,
+              TICKET_BANNER_URL,
 
             bottomImage:
-              TICKET_BOTTOM_IMAGE_URL ||
-              BOTTOM_FOOTER_URL
+              TICKET_BOTTOM_IMAGE_URL
 
           });
 
@@ -1158,9 +1212,6 @@ client.on(
             );
 
         await ticketChannel.send({
-
-          content:
-            `${interaction.user}`,
 
           flags:
             MessageFlags.IsComponentsV2,
@@ -1241,15 +1292,15 @@ client.on(
 
               `**Ticket ID:** ${ticketId}\n` +
               `**Opened By:** <@${ticketOwner}>\n` +
-              `**Claimed By:** ${interaction.user}`,
+              `**Claimed By:** ${interaction.user}\n\n` +
+
+              'A member of the support team is now handling this ticket.',
 
             topImage:
-              TICKET_BANNER_URL ||
-              TOP_BANNER_URL,
+              TICKET_BANNER_URL,
 
             bottomImage:
-              TICKET_BOTTOM_IMAGE_URL ||
-              BOTTOM_FOOTER_URL
+              TICKET_BOTTOM_IMAGE_URL
 
           });
 
@@ -1363,12 +1414,10 @@ client.on(
               'The ticket transcript will be saved and the ticket owner will receive a feedback message.',
 
             topImage:
-              TICKET_BANNER_URL ||
-              TOP_BANNER_URL,
+              TICKET_BANNER_URL,
 
             bottomImage:
-              TICKET_BOTTOM_IMAGE_URL ||
-              BOTTOM_FOOTER_URL
+              TICKET_BOTTOM_IMAGE_URL
 
           });
 
@@ -1399,12 +1448,21 @@ client.on(
           'cancel_close_ticket'
       ) {
 
+        const cancelledPanel =
+          createStatusPanel(
+            'Close Ticket',
+            'Ticket closure has been cancelled.\n\n' +
+            'The ticket remains open.'
+          );
+
         await interaction.update({
 
-          content:
-            'Ticket closure cancelled.',
+          flags:
+            MessageFlags.IsComponentsV2,
 
-          components: []
+          components: [
+            cancelledPanel
+          ]
 
         });
 
@@ -1444,11 +1502,13 @@ client.on(
           );
 
         const owner =
-          await client.users.fetch(
-            ownerId
-          ).catch(
-            () => null
-          );
+          ownerId
+            ? await client.users.fetch(
+                ownerId
+              ).catch(
+                () => null
+              )
+            : null;
 
         await sendTranscript(
           channel,
@@ -1467,12 +1527,25 @@ client.on(
 
         }
 
+        const closedPanel =
+          createStatusPanel(
+
+            'Ticket Closed',
+
+            'This ticket has been closed.\n\n' +
+            'The transcript has been saved and the ticket owner has been sent a feedback request.\n\n' +
+            'This channel will be deleted shortly.'
+
+          );
+
         await interaction.update({
 
-          content:
-            'Ticket closed. This channel will be deleted shortly.',
+          flags:
+            MessageFlags.IsComponentsV2,
 
-          components: []
+          components: [
+            closedPanel
+          ]
 
         });
 
@@ -1516,7 +1589,9 @@ client.on(
           );
 
         const rating =
-          Number(parts[1]);
+          Number(
+            parts[1]
+          );
 
         const ticketId =
           parts[2];
@@ -1530,7 +1605,10 @@ client.on(
               TICKET_FEEDBACK_CHANNEL_ID
             );
 
-          if (feedbackChannel) {
+          if (
+            feedbackChannel &&
+            feedbackChannel.isTextBased()
+          ) {
 
             const feedbackPanel =
               createPanel({
@@ -1566,12 +1644,24 @@ client.on(
 
         }
 
+        const thankYouPanel =
+          createStatusPanel(
+
+            'Feedback Received',
+
+            'Thank you for your feedback.\n\n' +
+            `Your rating of **${rating}/5** has been recorded.`
+
+          );
+
         await interaction.update({
 
-          content:
-            'Thank you for your feedback. Your rating has been recorded.',
+          flags:
+            MessageFlags.IsComponentsV2,
 
-          components: []
+          components: [
+            thankYouPanel
+          ]
 
         });
 
@@ -1671,12 +1761,10 @@ client.on(
               '> Partnership Questions',
 
             topImage:
-              TICKET_BANNER_URL ||
-              TOP_BANNER_URL,
+              TICKET_BANNER_URL,
 
             bottomImage:
-              TICKET_BOTTOM_IMAGE_URL ||
-              BOTTOM_FOOTER_URL
+              TICKET_BOTTOM_IMAGE_URL
 
           });
 
@@ -1768,21 +1856,19 @@ client.on(
               'Once verified, you will unlock all channels.\n\n' +
 
               '**Why we verify:**\n' +
-              'Prevent bots\n' +
-              'Keep the community safe\n' +
-              'Ensure everyone follows the rules.\n\n' +
+              '• Prevent bots\n' +
+              '• Keep the community organized\n' +
+              '• Ensure members follow the rules\n\n' +
 
               `If you have issues verifying, please contact a staff member in <#${VERIFICATION_SUPPORT_CHANNEL_ID}>.\n\n` +
 
               '-# Thank you for joining and enjoy your stay.',
 
             topImage:
-              VERIFICATION_BANNER_URL ||
-              TOP_BANNER_URL,
+              VERIFICATION_BANNER_URL,
 
             bottomImage:
-              VERIFICATION_BOTTOM_IMAGE_URL ||
-              BOTTOM_FOOTER_URL
+              VERIFICATION_BOTTOM_IMAGE_URL
 
           });
 
@@ -2014,7 +2100,9 @@ client.on(
                 department.description
 
             )
-            .join('\n\n');
+            .join(
+              '\n\n'
+            );
 
         const panel =
           createTextPanel({
@@ -2152,12 +2240,16 @@ client.on(
         error
       );
 
-      if (
-        interaction.replied ||
-        interaction.deferred
-      ) {
+      // --------------------------------------------------------
+      // Safe error response
+      // --------------------------------------------------------
 
-        try {
+      try {
+
+        if (
+          interaction.replied ||
+          interaction.deferred
+        ) {
 
           await interaction.followUp({
 
@@ -2169,11 +2261,7 @@ client.on(
 
           });
 
-        } catch {}
-
-      } else {
-
-        try {
+        } else {
 
           await interaction.reply({
 
@@ -2185,7 +2273,13 @@ client.on(
 
           });
 
-        } catch {}
+        }
+
+      } catch {
+
+        console.error(
+          'Unable to send interaction error response.'
+        );
 
       }
 
@@ -2203,7 +2297,7 @@ async function registerCommands() {
   if (!process.env.BOT_TOKEN) {
 
     throw new Error(
-      'BOT_TOKEN is missing from your .env file.'
+      'BOT_TOKEN is missing from your environment variables.'
     );
 
   }
@@ -2211,7 +2305,7 @@ async function registerCommands() {
   if (!process.env.CLIENT_ID) {
 
     throw new Error(
-      'CLIENT_ID is missing from your .env file.'
+      'CLIENT_ID is missing from your environment variables.'
     );
 
   }
@@ -2241,8 +2335,9 @@ async function registerCommands() {
   );
 
   console.log(
-    'Slash commands registered successfully.'
+    `Successfully registered ${commands.length} slash commands.`
   );
+
 }
 
 // ============================================================
@@ -2253,10 +2348,26 @@ async function startBot() {
 
   try {
 
+    console.log(
+      '=================================================='
+    );
+
+    console.log(
+      'Blanco County RP Operations'
+    );
+
+    console.log(
+      'Starting bot...'
+    );
+
+    console.log(
+      '=================================================='
+    );
+
     await registerCommands();
 
     console.log(
-      'Starting Discord client...'
+      'Connecting to Discord...'
     );
 
     await client.login(
@@ -2274,7 +2385,9 @@ async function startBot() {
     );
 
     process.exit(1);
+
   }
+
 }
 
 startBot();
