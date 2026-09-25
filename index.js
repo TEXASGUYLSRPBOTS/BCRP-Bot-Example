@@ -67,6 +67,9 @@ const BOTTOM_FOOTER_URL =
 const VERIFIED_ROLE_ID =
   '1553091032781037608';
 
+const COMMUNITY_MEMBER_ROLE_ID =
+  '1553091095749988402';
+
 const VERIFICATION_SUPPORT_CHANNEL_ID =
   '1553090868691599402';
 
@@ -92,9 +95,6 @@ const SERVER_MANAGEMENT_ROLE_ID =
 const PARTNERSHIP_TEAM_ROLE_ID =
   '1553091195264172177';
 
-const COMMUNITY_MEMBER_ROLE_ID =
-  '1553091095749988402';
-
 const TICKET_TRANSCRIPT_CHANNEL_ID =
   '1553091667924357220';
 
@@ -119,9 +119,6 @@ const CLIENT_ID =
 
 // ============================================================
 // RENDER HEALTH SERVER
-//
-// This allows the bot to run as a Render Web Service while
-// still providing an HTTP port for Render to detect.
 // ============================================================
 
 const RENDER_PORT =
@@ -1842,30 +1839,19 @@ client.on(
           'verify_member'
       ) {
 
-        if (!VERIFIED_ROLE_ID) {
-
-          return interaction.reply({
-
-            content:
-              'The verification role has not been configured yet.',
-
-            ephemeral:
-              true
-
-          });
-
-        }
+        // ------------------------------------------------------
+        // VERIFY CONFIGURATION CHECK
+        // ------------------------------------------------------
 
         if (
-          interaction.member.roles.cache.has(
-            VERIFIED_ROLE_ID
-          )
+          !VERIFIED_ROLE_ID ||
+          !COMMUNITY_MEMBER_ROLE_ID
         ) {
 
           return interaction.reply({
 
             content:
-              'You are already verified.',
+              'The verification roles have not been configured correctly.',
 
             ephemeral:
               true
@@ -1874,14 +1860,103 @@ client.on(
 
         }
 
-        await interaction.member.roles.add(
-          VERIFIED_ROLE_ID
-        );
+        // ------------------------------------------------------
+        // FETCH THE MEMBER
+        // ------------------------------------------------------
+
+        const guild =
+          interaction.guild;
+
+        if (!guild) {
+
+          return interaction.reply({
+
+            content:
+              'Verification can only be completed inside a server.',
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        const member =
+          await guild.members.fetch(
+            interaction.user.id
+          );
+
+        // ------------------------------------------------------
+        // CHECK EXISTING ROLES
+        // ------------------------------------------------------
+
+        const alreadyVerified =
+          member.roles.cache.has(
+            VERIFIED_ROLE_ID
+          );
+
+        const alreadyCommunityMember =
+          member.roles.cache.has(
+            COMMUNITY_MEMBER_ROLE_ID
+          );
+
+        if (
+          alreadyVerified &&
+          alreadyCommunityMember
+        ) {
+
+          return interaction.reply({
+
+            content:
+              'You are already verified and already have the Community Member role.',
+
+            ephemeral:
+              true
+
+          });
+
+        }
+
+        // ------------------------------------------------------
+        // VERIFY ROLE
+        // ------------------------------------------------------
+
+        if (!alreadyVerified) {
+
+          await member.roles.add(
+
+            VERIFIED_ROLE_ID,
+
+            'Completed BlancoCountyRP verification'
+
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // COMMUNITY MEMBER ROLE
+        // ------------------------------------------------------
+
+        if (!alreadyCommunityMember) {
+
+          await member.roles.add(
+
+            COMMUNITY_MEMBER_ROLE_ID,
+
+            'Completed BlancoCountyRP verification'
+
+          );
+
+        }
+
+        // ------------------------------------------------------
+        // SUCCESS MESSAGE
+        // ------------------------------------------------------
 
         await interaction.reply({
 
           content:
-            'You have been verified successfully.',
+            'Verification complete! You have been given the **Verified** and **Community Member** roles.',
 
           ephemeral:
             true
@@ -2469,10 +2544,6 @@ client.on(
 
 // ============================================================
 // REGISTER SLASH COMMANDS
-//
-// IMPORTANT:
-// The bot logs in FIRST.
-// Then we use the actual authenticated application ID.
 // ============================================================
 
 async function registerCommands() {
@@ -2619,8 +2690,6 @@ async function registerCommands() {
 
 // ============================================================
 // START BOT
-//
-// LOGIN FIRST → VERIFY TOKEN → REGISTER COMMANDS
 // ============================================================
 
 async function startBot() {
@@ -2651,10 +2720,6 @@ async function startBot() {
 
   try {
 
-    // ----------------------------------------------------------
-    // STEP 1 — AUTHENTICATE WITH DISCORD
-    // ----------------------------------------------------------
-
     console.log(
       'Connecting to Discord...'
     );
@@ -2662,10 +2727,6 @@ async function startBot() {
     await client.login(
       BOT_TOKEN
     );
-
-    // ----------------------------------------------------------
-    // STEP 2 — WAIT FOR READY
-    // ----------------------------------------------------------
 
     if (
       !client.isReady()
@@ -2684,10 +2745,6 @@ async function startBot() {
 
     }
 
-    // ----------------------------------------------------------
-    // STEP 3 — VERIFY APPLICATION ID
-    // ----------------------------------------------------------
-
     console.log(
       'Discord authentication successful.'
     );
@@ -2700,15 +2757,7 @@ async function startBot() {
       `Authenticated Bot ID: ${client.user.id}`
     );
 
-    // ----------------------------------------------------------
-    // STEP 4 — REGISTER COMMANDS
-    // ----------------------------------------------------------
-
     await registerCommands();
-
-    // ----------------------------------------------------------
-    // COMPLETE
-    // ----------------------------------------------------------
 
     console.log(
       '=================================================='
