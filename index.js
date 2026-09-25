@@ -84,10 +84,10 @@ const FAQ_TEXT =
 // ============================================================
 
 const TOP_BANNER_URL =
-  'https://raw.githubusercontent.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/main/assets/discord-banner%20(1).png';
+  'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/Untitled_design-discord-serverBanner-960x540.png';
 
 const BOTTOM_FOOTER_URL =
-  'https://raw.githubusercontent.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/main/assets/discord-banner%20(2).png';
+  'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/727o9.png';
 
 const DASHBOARD_BANNER_URL = TOP_BANNER_URL;
 const DASHBOARD_BOTTOM_IMAGE_URL = BOTTOM_FOOTER_URL;
