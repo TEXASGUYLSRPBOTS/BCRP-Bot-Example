@@ -51,7 +51,6 @@ const ABOUT_TEXT =
 
 // ============================================================
 // GITHUB ASSETS
-// IMPORTANT: These are RAW GitHub URLs, not /blob/ URLs.
 // ============================================================
 
 const TOP_BANNER_URL =
@@ -106,6 +105,45 @@ const TICKET_BANNER_URL =
 
 const TICKET_BOTTOM_IMAGE_URL =
   BOTTOM_FOOTER_URL;
+
+// ============================================================
+// ENVIRONMENT
+// ============================================================
+
+const BOT_TOKEN =
+  (process.env.BOT_TOKEN || '').trim();
+
+const CLIENT_ID =
+  (process.env.CLIENT_ID || '').trim();
+
+// ============================================================
+// ENVIRONMENT VALIDATION
+// ============================================================
+
+function validateEnvironment() {
+  console.log('Environment check...');
+
+  if (!BOT_TOKEN) {
+    console.error('❌ BOT_TOKEN is missing.');
+    console.error(
+      'Add BOT_TOKEN to Render → Environment.'
+    );
+    return false;
+  }
+
+  if (!CLIENT_ID) {
+    console.error('❌ CLIENT_ID is missing.');
+    console.error(
+      'Add CLIENT_ID to Render → Environment.'
+    );
+    return false;
+  }
+
+  console.log('✓ BOT_TOKEN is present.');
+  console.log(`✓ CLIENT_ID: ${CLIENT_ID}`);
+
+  return true;
+}
 
 // ============================================================
 // TICKET SUBJECTS
@@ -301,10 +339,10 @@ const INGAME_REGULATIONS_TEXT =
   'Breaking Roblox or applicable platform Terms of Service may result in removal from the community.\n\n' +
 
   '**Restricted Items & Roleplays**\n' +
-  'Refer to the current official BlancoCountyRP restricted-item list and staff announcements for the current restrictions.\n\n' +
+  'Refer to the current official BlancoCountyRP restricted-item list and staff announcements for current restrictions.\n\n' +
 
   '**Restricted Roleplays**\n' +
-  'Roleplays involving sexual content, graphic content, terrorism/bomb scenarios, or other prohibited content are not allowed.';
+  'Roleplays involving sexual content, graphic content, or other prohibited content are not allowed.';
 
 // ============================================================
 // DEPARTMENTS
@@ -336,7 +374,7 @@ const DEPARTMENTS = [
 ];
 
 // ============================================================
-// COMPONENTS V2 HELPERS
+// COMPONENTS V2
 // ============================================================
 
 function addMedia(container, url) {
@@ -353,9 +391,7 @@ function addMedia(container, url) {
         }
       });
 
-  container.addMediaGalleryComponents(
-    gallery
-  );
+  container.addMediaGalleryComponents(gallery);
 
   return container;
 }
@@ -372,10 +408,7 @@ function createPanel({
       .setAccentColor(BRAND_COLOR);
 
   if (topImage) {
-    addMedia(
-      container,
-      topImage
-    );
+    addMedia(container, topImage);
   }
 
   container.addTextDisplayComponents(
@@ -386,10 +419,7 @@ function createPanel({
   );
 
   if (bottomImage) {
-    addMedia(
-      container,
-      bottomImage
-    );
+    addMedia(container, bottomImage);
   }
 
   return container;
@@ -397,24 +427,19 @@ function createPanel({
 
 function createTextPanel({
   title,
-  content,
-  topImage = TOP_BANNER_URL,
-  bottomImage = BOTTOM_FOOTER_URL
+  content
 }) {
 
   return createPanel({
     title,
     content,
-    topImage,
-    bottomImage
+    topImage: TOP_BANNER_URL,
+    bottomImage: BOTTOM_FOOTER_URL
   });
 
 }
 
-function splitText(
-  text,
-  maxLength = 3500
-) {
+function splitText(text, maxLength = 3500) {
 
   const chunks = [];
   let current = '';
@@ -454,15 +479,7 @@ function splitText(
   return chunks;
 }
 
-// ============================================================
-// V2 STATUS PANEL
-// Used when a V2 message needs to be updated.
-// ============================================================
-
-function createStatusPanel(
-  title,
-  content
-) {
+function createStatusPanel(title, content) {
 
   return createPanel({
     title,
@@ -539,9 +556,7 @@ function isStaff(member) {
 
   return staffRoles.some(
     roleId =>
-      member.roles.cache.has(
-        roleId
-      )
+      member.roles.cache.has(roleId)
   );
 }
 
@@ -549,10 +564,7 @@ function isStaff(member) {
 // TRANSCRIPT
 // ============================================================
 
-async function sendTranscript(
-  channel,
-  closedBy
-) {
+async function sendTranscript(channel, closedBy) {
 
   if (!TICKET_TRANSCRIPT_CHANNEL_ID) {
     return;
@@ -563,10 +575,15 @@ async function sendTranscript(
       TICKET_TRANSCRIPT_CHANNEL_ID
     );
 
-  if (!transcriptChannel) {
+  if (
+    !transcriptChannel ||
+    !transcriptChannel.isTextBased()
+  ) {
+
     console.log(
       'Transcript channel not found.'
     );
+
     return;
   }
 
@@ -615,9 +632,7 @@ async function sendTranscript(
       `${message.author.tag}: ` +
       `${content}\n`;
 
-    if (
-      message.attachments.size > 0
-    ) {
+    if (message.attachments.size > 0) {
 
       transcript +=
         `Attachments: ${[
@@ -634,15 +649,10 @@ async function sendTranscript(
     transcript += '\n';
   }
 
-  if (
-    transcript.length > 900000
-  ) {
+  if (transcript.length > 900000) {
 
     transcript =
-      transcript.slice(
-        0,
-        899000
-      );
+      transcript.slice(0, 899000);
 
   }
 
@@ -672,10 +682,7 @@ async function sendTranscript(
 // FEEDBACK DM
 // ============================================================
 
-async function sendFeedbackDM(
-  user,
-  ticketInfo
-) {
+async function sendFeedbackDM(user, ticketInfo) {
 
   try {
 
@@ -687,9 +694,7 @@ async function sendFeedbackDM(
 
         content:
           'Thank you for contacting BlancoCountyRP Support.\n\n' +
-
           `Your **${ticketInfo.subject}** ticket has been closed.\n\n` +
-
           'Please rate the support you received.',
 
         topImage:
@@ -709,45 +714,35 @@ async function sendFeedbackDM(
               `feedback_1_${ticketInfo.ticketId}`
             )
             .setLabel('1')
-            .setStyle(
-              ButtonStyle.Danger
-            ),
+            .setStyle(ButtonStyle.Danger),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_2_${ticketInfo.ticketId}`
             )
             .setLabel('2')
-            .setStyle(
-              ButtonStyle.Danger
-            ),
+            .setStyle(ButtonStyle.Danger),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_3_${ticketInfo.ticketId}`
             )
             .setLabel('3')
-            .setStyle(
-              ButtonStyle.Secondary
-            ),
+            .setStyle(ButtonStyle.Secondary),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_4_${ticketInfo.ticketId}`
             )
             .setLabel('4')
-            .setStyle(
-              ButtonStyle.Success
-            ),
+            .setStyle(ButtonStyle.Success),
 
           new ButtonBuilder()
             .setCustomId(
               `feedback_5_${ticketInfo.ticketId}`
             )
             .setLabel('5')
-            .setStyle(
-              ButtonStyle.Success
-            )
+            .setStyle(ButtonStyle.Success)
 
         );
 
@@ -864,7 +859,7 @@ client.once(
     );
 
     console.log(
-      ` ${BOT_NAME}`
+      `${BOT_NAME} IS NOW ONLINE`
     );
 
     console.log(
@@ -876,7 +871,11 @@ client.once(
     );
 
     console.log(
-      `Bot ID: ${client.user.id}`
+      `Application ID: ${client.user.id}`
+    );
+
+    console.log(
+      `Expected Application ID: ${CLIENT_ID}`
     );
 
     console.log(
@@ -939,13 +938,10 @@ client.on(
         if (!subject) {
 
           return interaction.reply({
-
             content:
               'Invalid ticket type.',
-
             ephemeral:
               true
-
           });
 
         }
@@ -960,17 +956,11 @@ client.on(
         if (!guild) {
 
           return interaction.editReply({
-
             content:
               'Tickets can only be opened inside a server.'
-
           });
 
         }
-
-        // ------------------------------------------------------
-        // REQUIRED COMMUNITY ROLE
-        // ------------------------------------------------------
 
         if (
           COMMUNITY_MEMBER_ROLE_ID &&
@@ -980,17 +970,11 @@ client.on(
         ) {
 
           return interaction.editReply({
-
             content:
               'You do not have the required community member role to open a ticket.'
-
           });
 
         }
-
-        // ------------------------------------------------------
-        // EXISTING TICKET
-        // ------------------------------------------------------
 
         const existingTicket =
           guild.channels.cache.find(
@@ -1000,15 +984,11 @@ client.on(
                 channel.type !==
                 ChannelType.GuildText
               ) {
-
                 return false;
-
               }
 
               return (
-                getTicketOwner(
-                  channel
-                ) ===
+                getTicketOwner(channel) ===
                 interaction.user.id
               );
 
@@ -1018,26 +998,16 @@ client.on(
         if (existingTicket) {
 
           return interaction.editReply({
-
             content:
               `You already have an open ticket: ${existingTicket}`
-
           });
 
         }
-
-        // ------------------------------------------------------
-        // TICKET ID
-        // ------------------------------------------------------
 
         const ticketId =
           Date.now()
             .toString()
             .slice(-6);
-
-        // ------------------------------------------------------
-        // SAFE USERNAME
-        // ------------------------------------------------------
 
         const safeUsername =
           interaction.user.username
@@ -1046,15 +1016,8 @@ client.on(
               /[^a-z0-9-]/g,
               ''
             )
-            .slice(
-              0,
-              20
-            ) ||
+            .slice(0, 20) ||
           'member';
-
-        // ------------------------------------------------------
-        // CHANNEL NAME
-        // ------------------------------------------------------
 
         const channelName =
           subject.channelName
@@ -1075,10 +1038,6 @@ client.on(
               ticketId
             );
 
-        // ------------------------------------------------------
-        // PERMISSIONS
-        // ------------------------------------------------------
-
         const permissionOverwrites = [
 
           {
@@ -1095,21 +1054,18 @@ client.on(
               interaction.user.id,
 
             allow: [
-
               PermissionFlagsBits.ViewChannel,
               PermissionFlagsBits.SendMessages,
               PermissionFlagsBits.ReadMessageHistory,
               PermissionFlagsBits.AttachFiles,
               PermissionFlagsBits.EmbedLinks
-
             ]
           }
 
         ];
 
         for (
-          const roleId
-          of subject.staffRoles
+          const roleId of subject.staffRoles
         ) {
 
           permissionOverwrites.push({
@@ -1118,23 +1074,17 @@ client.on(
               roleId,
 
             allow: [
-
               PermissionFlagsBits.ViewChannel,
               PermissionFlagsBits.SendMessages,
               PermissionFlagsBits.ReadMessageHistory,
               PermissionFlagsBits.AttachFiles,
               PermissionFlagsBits.EmbedLinks,
               PermissionFlagsBits.ManageMessages
-
             ]
 
           });
 
         }
-
-        // ------------------------------------------------------
-        // CREATE TICKET CHANNEL
-        // ------------------------------------------------------
 
         const ticketChannel =
           await guild.channels.create({
@@ -1158,12 +1108,12 @@ client.on(
 
           });
 
-        // ------------------------------------------------------
-        // TICKET PANEL
-        //
-        // IMPORTANT:
+        // Send the mention separately.
         // Components V2 cannot use top-level "content".
-        // ------------------------------------------------------
+        await ticketChannel.send({
+          content:
+            `${interaction.user} — your ticket has been opened.`
+        });
 
         const ticketPanel =
           createPanel({
@@ -1172,7 +1122,6 @@ client.on(
               subject.label,
 
             content:
-              `Ticket opened by ${interaction.user}.\n\n` +
               subject.message,
 
             topImage:
@@ -1217,10 +1166,8 @@ client.on(
             MessageFlags.IsComponentsV2,
 
           components: [
-
             ticketPanel,
             ticketButtons
-
           ]
 
         });
@@ -1255,13 +1202,10 @@ client.on(
         ) {
 
           return interaction.reply({
-
             content:
               'You do not have permission to claim tickets.',
-
             ephemeral:
               true
-
           });
 
         }
@@ -1327,10 +1271,8 @@ client.on(
             MessageFlags.IsComponentsV2,
 
           components: [
-
             claimedPanel,
             closeButton
-
           ]
 
         });
@@ -1364,13 +1306,10 @@ client.on(
         ) {
 
           return interaction.reply({
-
             content:
               'You do not have permission to close this ticket.',
-
             ephemeral:
               true
-
           });
 
         }
@@ -1427,10 +1366,8 @@ client.on(
             MessageFlags.IsComponentsV2,
 
           components: [
-
             confirmationPanel,
             confirmationRow
-
           ]
 
         });
@@ -1487,19 +1424,13 @@ client.on(
         }
 
         const ownerId =
-          getTicketOwner(
-            channel
-          );
+          getTicketOwner(channel);
 
         const subject =
-          getTicketSubject(
-            channel
-          );
+          getTicketSubject(channel);
 
         const ticketId =
-          getTicketID(
-            channel
-          );
+          getTicketID(channel);
 
         const owner =
           ownerId
@@ -1584,14 +1515,10 @@ client.on(
       ) {
 
         const parts =
-          interaction.customId.split(
-            '_'
-          );
+          interaction.customId.split('_');
 
         const rating =
-          Number(
-            parts[1]
-          );
+          Number(parts[1]);
 
         const ticketId =
           parts[2];
@@ -1681,13 +1608,10 @@ client.on(
         if (!VERIFIED_ROLE_ID) {
 
           return interaction.reply({
-
             content:
               'The verification role has not been configured yet.',
-
             ephemeral:
               true
-
           });
 
         }
@@ -1699,13 +1623,10 @@ client.on(
         ) {
 
           return interaction.reply({
-
             content:
               'You are already verified.',
-
             ephemeral:
               true
-
           });
 
         }
@@ -1715,13 +1636,10 @@ client.on(
         );
 
         await interaction.reply({
-
           content:
             'You have been verified successfully.',
-
           ephemeral:
             true
-
         });
 
         return;
@@ -1817,10 +1735,8 @@ client.on(
             MessageFlags.IsComponentsV2,
 
           components: [
-
             ticketPanel,
             menuRow
-
           ]
 
         });
@@ -1896,10 +1812,8 @@ client.on(
             MessageFlags.IsComponentsV2,
 
           components: [
-
             verificationPanel,
             verifyRow
-
           ]
 
         });
@@ -2018,7 +1932,6 @@ client.on(
                   chunk
 
               })
-
           );
 
         await interaction.reply({
@@ -2064,7 +1977,6 @@ client.on(
                   chunk
 
               })
-
           );
 
         await interaction.reply({
@@ -2098,11 +2010,8 @@ client.on(
                 `### ${department.name}\n` +
                 `**${department.abbreviation}**\n` +
                 department.description
-
             )
-            .join(
-              '\n\n'
-            );
+            .join('\n\n');
 
         const panel =
           createTextPanel({
@@ -2240,10 +2149,6 @@ client.on(
         error
       );
 
-      // --------------------------------------------------------
-      // Safe error response
-      // --------------------------------------------------------
-
       try {
 
         if (
@@ -2290,22 +2195,56 @@ client.on(
 
 // ============================================================
 // REGISTER SLASH COMMANDS
+//
+// IMPORTANT CHANGE:
+// The bot logs in FIRST.
+// Then we use the actual authenticated application ID.
 // ============================================================
 
 async function registerCommands() {
 
-  if (!process.env.BOT_TOKEN) {
+  if (!client.user) {
 
     throw new Error(
-      'BOT_TOKEN is missing from your environment variables.'
+      'Discord client is not authenticated.'
     );
 
   }
 
-  if (!process.env.CLIENT_ID) {
+  const authenticatedApplicationId =
+    client.user.id;
 
-    throw new Error(
-      'CLIENT_ID is missing from your environment variables.'
+  console.log(
+    '=================================================='
+  );
+
+  console.log(
+    'Registering slash commands...'
+  );
+
+  console.log(
+    `Authenticated Application ID: ${authenticatedApplicationId}`
+  );
+
+  console.log(
+    `Configured CLIENT_ID: ${CLIENT_ID}`
+  );
+
+  console.log(
+    `Commands to register: ${commands.length}`
+  );
+
+  if (
+    CLIENT_ID &&
+    authenticatedApplicationId !== CLIENT_ID
+  ) {
+
+    console.warn(
+      'WARNING: CLIENT_ID does not match the authenticated bot application.'
+    );
+
+    console.warn(
+      'The bot will use the authenticated application ID.'
     );
 
   }
@@ -2314,80 +2253,262 @@ async function registerCommands() {
     new REST({
       version: '10'
     }).setToken(
-      process.env.BOT_TOKEN
+      BOT_TOKEN
     );
 
-  console.log(
-    'Registering slash commands...'
-  );
+  try {
 
-  await rest.put(
+    await rest.put(
 
-    Routes.applicationCommands(
-      process.env.CLIENT_ID
-    ),
+      Routes.applicationCommands(
+        authenticatedApplicationId
+      ),
 
-    {
-      body:
-        commands
+      {
+        body:
+          commands
+      }
+
+    );
+
+    console.log(
+      `Successfully registered ${commands.length} slash commands.`
+    );
+
+    console.log(
+      '=================================================='
+    );
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      'Slash-command registration failed.'
+    );
+
+    console.error(
+      `HTTP Status: ${error?.status ?? 'unknown'}`
+    );
+
+    if (error?.status === 401) {
+
+      console.error(
+        'Discord returned 401 Unauthorized.'
+      );
+
+      console.error(
+        'The BOT_TOKEN being used by this process is not accepted by Discord.'
+      );
+
+      console.error(
+        'Go to Discord Developer Portal → Application → Bot → Reset Token.'
+      );
+
+      console.error(
+        'Then replace BOT_TOKEN in Render → Environment.'
+      );
+
+    } else if (error?.status === 403) {
+
+      console.error(
+        'Discord returned 403 Forbidden.'
+      );
+
+      console.error(
+        'Check the application permissions and bot configuration.'
+      );
+
+    } else if (error?.status === 404) {
+
+      console.error(
+        'Discord returned 404 Not Found.'
+      );
+
+      console.error(
+        'The authenticated application could not be found.'
+      );
+
     }
 
-  );
+    throw error;
 
-  console.log(
-    `Successfully registered ${commands.length} slash commands.`
-  );
+  }
 
 }
 
 // ============================================================
 // START BOT
+//
+// IMPORTANT:
+// LOGIN FIRST → VERIFY TOKEN → REGISTER COMMANDS
 // ============================================================
 
 async function startBot() {
 
+  console.log(
+    '=================================================='
+  );
+
+  console.log(
+    BOT_NAME
+  );
+
+  console.log(
+    'Starting bot...'
+  );
+
+  console.log(
+    '=================================================='
+  );
+
+  if (!validateEnvironment()) {
+
+    process.exit(1);
+
+  }
+
   try {
 
-    console.log(
-      '=================================================='
-    );
-
-    console.log(
-      'Blanco County RP Operations'
-    );
-
-    console.log(
-      'Starting bot...'
-    );
-
-    console.log(
-      '=================================================='
-    );
-
-    await registerCommands();
+    // ----------------------------------------------------------
+    // STEP 1 — AUTHENTICATE WITH DISCORD
+    // ----------------------------------------------------------
 
     console.log(
       'Connecting to Discord...'
     );
 
     await client.login(
-      process.env.BOT_TOKEN
+      BOT_TOKEN
+    );
+
+    // ----------------------------------------------------------
+    // STEP 2 — WAIT FOR READY
+    // ----------------------------------------------------------
+
+    if (!client.isReady()) {
+
+      await new Promise(resolve => {
+
+        client.once(
+          'ready',
+          resolve
+        );
+
+      });
+
+    }
+
+    // ----------------------------------------------------------
+    // STEP 3 — VERIFY APPLICATION ID
+    // ----------------------------------------------------------
+
+    console.log(
+      'Discord authentication successful.'
+    );
+
+    console.log(
+      `Authenticated as: ${client.user.tag}`
+    );
+
+    console.log(
+      `Authenticated Bot ID: ${client.user.id}`
+    );
+
+    // ----------------------------------------------------------
+    // STEP 4 — REGISTER COMMANDS
+    // ----------------------------------------------------------
+
+    await registerCommands();
+
+    // ----------------------------------------------------------
+    // COMPLETE
+    // ----------------------------------------------------------
+
+    console.log(
+      '=================================================='
+    );
+
+    console.log(
+      `${BOT_NAME} IS NOW ONLINE`
+    );
+
+    console.log(
+      '=================================================='
+    );
+
+    console.log(
+      `Logged in as: ${client.user.tag}`
+    );
+
+    console.log(
+      `Application ID: ${client.user.id}`
+    );
+
+    console.log(
+      `Server: ${SERVER_NAME}`
+    );
+
+    console.log(
+      `Status: ${STATUS}`
+    );
+
+    console.log(
+      `Commands: ${commands.length}`
+    );
+
+    console.log(
+      '=================================================='
     );
 
   } catch (error) {
 
     console.error(
-      'Failed to start bot:'
+      '=================================================='
     );
 
     console.error(
-      error
+      'FAILED TO START BOT'
     );
+
+    console.error(
+      '=================================================='
+    );
+
+    if (error?.status === 401) {
+
+      console.error(
+        'DISCORD AUTHENTICATION FAILED: 401 UNAUTHORIZED'
+      );
+
+      console.error(
+        'Check BOT_TOKEN in Render → Environment.'
+      );
+
+      console.error(
+        'The token must come from Discord Developer Portal → Bot → Token.'
+      );
+
+      console.error(
+        'Do NOT use the Client Secret, Public Key, or Application ID as BOT_TOKEN.'
+      );
+
+    } else {
+
+      console.error(
+        error
+      );
+
+    }
 
     process.exit(1);
 
   }
 
 }
+
+// ============================================================
+// START
+// ============================================================
 
 startBot();
