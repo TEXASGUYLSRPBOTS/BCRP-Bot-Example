@@ -1,7 +1,7 @@
 {
   "name": "blancocountyrp-bot",
   "version": "1.0.0",
-  "description": "BlancoCountyRP | Whitelisted Discord Bot",
+  "description": "Blanco County RP Operations Discord Bot",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "discord.js": "^14.26.3",
+    "discord.js": "^14.26.4",
     "dotenv": "^17.2.2"
   }
 }
