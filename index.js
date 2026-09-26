@@ -87,10 +87,10 @@ const FAQ_TEXT =
 // These are used directly instead of the previous GitHub raw-image URLs,
 // which Discord's media fetcher was not consistently rendering.
 const BLANCO_COUNTY_BACKGROUND_URL =
-  'https://media.discordapp.net/attachments/1553154072155263028/1553172263921123348/Untitled_design.png?ex=6ab8f0a4&is=6ab79f24&hm=868b45516a32303a31e5c69ce5d5b59bb9f0601b32fc86a999a8d6f0b38da2d1&=&format=webp&quality=lossless&width=512&height=294';
+  'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/3.png';
 
 const BLANCO_COUNTY_BRAND_URL =
-  'https://media.discordapp.net/attachments/1553154072155263028/1553172264596279316/IMG_0871.png?ex=6ab8f0a4&is=6ab79f24&hm=b734954da07d5192940c0cd0e2e473ca0833442e6409298e52d751927c7bc5a5';
+  'https://github.com/TEXASGUYLSRPBOTS/BCRP-Bot-Example/blob/main/assets/4.png';
 
 const TOP_BANNER_URL = BLANCO_COUNTY_BACKGROUND_URL;
 const BOTTOM_FOOTER_URL = BLANCO_COUNTY_BRAND_URL;
