@@ -195,7 +195,7 @@ const BCRP_SETUP_CATEGORIES = {
   staff: 'BCRP | Staff Area',
   tickets: 'BCRP | Tickets',
   voice: 'BCRP | Voice',
-  development: 'Under Development'
+  development: 'BCRP | Under Development'
 };
 
 const BCRP_SETUP_CHANNELS = [
@@ -226,6 +226,7 @@ const BCRP_SETUP_CHANNELS = [
   { key: 'fire-ems-lounge', category: 'voice', name: '🚒 | Fire & EMS Lounge', type: ChannelType.GuildVoice },
   { key: 'staff-lounge', category: 'voice', name: '🔒 | Staff Lounge', type: ChannelType.GuildVoice, staffOnly: true },
 
+  { key: 'development', category: 'development', name: '🛠️ | development', type: ChannelType.GuildText, readonly: false, staffOnly: true },
 
   { key: 'ticket-category', category: 'tickets', name: 'tickets', type: ChannelType.GuildText, internalCategoryMarker: true }
 ];
@@ -415,14 +416,14 @@ function buildDepartmentsPanel() {
   });
 }
 
-async function dmSetupReport(guild, result) {
+async function dmSetupReport(guild, result, visibility) {
   try {
     const user = await client.users.fetch(SETUP_REPORT_USER_ID);
     const lines = [];
     lines.push(`BlancoCountyRP Setup Report`);
     lines.push(`Server: ${guild.name}`);
     lines.push(`Guild ID: ${guild.id}`);
-    lines.push('Visibility: Public channels are public; staff, moderation, review, ticket, and staff voice areas are private.');
+    lines.push(`Visibility: ${visibility}`);
     lines.push('');
     lines.push('Categories');
     for (const category of Object.values(result.categories)) {
@@ -456,7 +457,7 @@ async function dmSetupReport(guild, result) {
   }
 }
 
-async function setupBcrpServer(guild, { rebuild = true } = {}) {
+async function setupBcrpServer(guild, { rebuild = true, visibility = 'recommended' } = {}) {
   if (rebuild) await rebuildBcrpServer(guild);
 
   const categories = {};
@@ -466,26 +467,19 @@ async function setupBcrpServer(guild, { rebuild = true } = {}) {
       category = await guild.channels.create({
         name,
         type: ChannelType.GuildCategory,
-        permissionOverwrites: key === 'staff' || key === 'tickets'
+        permissionOverwrites: key === 'staff' || key === 'development' || key === 'tickets'
           ? setupStaffOverwrites(guild, false)
-          : setupPublicOverwrites(guild, false)
+          : undefined
       });
     }
     categories[key] = category;
-  }
-
-  // Keep the empty Under Development category at the very top, then place the operational categories below it.
-  const categoryOrder = ['development', 'welcome', 'community', 'operations', 'staff', 'tickets', 'voice'];
-  for (let i = 0; i < categoryOrder.length; i++) {
-    const category = categories[categoryOrder[i]];
-    if (category) await category.setPosition(i).catch(() => {});
   }
 
   const created = {};
   for (const definition of BCRP_SETUP_CHANNELS) {
     if (definition.internalCategoryMarker) continue;
     let channel = guild.channels.cache.find(existing => existing.name === definition.name && existing.parentId === categories[definition.category].id);
-    const privateChannel = Boolean(definition.staffOnly || definition.category === 'staff' || definition.category === 'tickets');
+    const privateChannel = visibility === 'private' || definition.staffOnly || definition.category === 'staff' || definition.category === 'development' || definition.category === 'tickets';
     if (!channel) {
       channel = await guild.channels.create({
         name: definition.name,
@@ -599,7 +593,7 @@ const CLIENT_ID =
 // Set GUILD_ID in Render to your BlancoCountyRP server ID.
 // Using a guild route prevents the old global-command propagation delay.
 const COMMAND_GUILD_ID =
-  (process.env.COMMAND_GUILD_ID || process.env.GUILD_ID || '1553088185968631899').trim();
+  (process.env.COMMAND_GUILD_ID || '1553088185968631899').trim();
 
 // ============================================================
 // RENDER HEALTH SERVER
@@ -3210,8 +3204,18 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('setup')
-    .setDescription('Create or refresh the BlancoCountyRP under-development server structure.')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    .setDescription('Create the BlancoCountyRP under-development server structure.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .addStringOption(option =>
+      option
+        .setName('visibility')
+        .setDescription('Choose the default visibility for setup channels.')
+        .setRequired(false)
+        .addChoices(
+          { name: 'Recommended — public community, private staff', value: 'recommended' },
+          { name: 'Private — staff access by default', value: 'private' }
+        )
+    ),
 
   new SlashCommandBuilder()
     .setName('announce')
@@ -6909,12 +6913,12 @@ client.on(
           await interaction.editReply({
             content:
               `**BlancoCountyRP server setup complete.**\n\n` +
-              `**Top area:** Under Development (empty category)\n` +
+              `**Area:** BCRP | Under Development\n` +
               `**Visibility:** ${visibility === 'private' ? 'Private by default' : 'Recommended'}\n` +
               `**Categories:** ${Object.keys(result.categories).length}\n` +
               `**Text Channels:** ${textChannels}\n` +
               `**Voice Channels:** ${voiceChannels}\n\n` +
-              `Previous channels created by this setup were removed and recreated. Unrelated server channels were left alone. Public channels are public; staff, moderation, review, ticket, and staff voice areas are private.\n` +
+              `Previous channels created by this setup were removed and recreated. Unrelated server channels were left alone.\n` +
               `The dashboard, assistance, verification, applications, departments, and sessions panels were seeded automatically.\n\n` +
               `**Setup report DM:** ${dmSent ? 'Sent to <@${SETUP_REPORT_USER_ID}>.' : 'Could not be sent; check the bot DMs/privacy settings.'}`
           });
@@ -7945,8 +7949,8 @@ async function registerCommands() {
     // global commands and then switched to guild-specific registration.
     if (COMMAND_GUILD_ID) {
 
-      // Clear old global commands so the server does not show two copies
-      // of the same command (one global + one guild command).
+      // Remove EVERY global command first. This eliminates any old KCRP
+      // command set that was previously registered globally.
       await rest.put(
         Routes.applicationCommands(
           authenticatedApplicationId
@@ -7956,6 +7960,34 @@ async function registerCommands() {
         }
       );
 
+      // Remove guild commands from every server this bot is currently in.
+      // This prevents old KCRP command sets from surviving in guild scope.
+      // The only guild we intentionally repopulate afterward is BCRP.
+      const botGuilds = client.guilds.cache.map(guild => guild.id);
+
+      for (const guildId of botGuilds) {
+        try {
+          await rest.put(
+            Routes.applicationGuildCommands(
+              authenticatedApplicationId,
+              guildId
+            ),
+            {
+              body: []
+            }
+          );
+
+          console.log(
+            `[COMMAND CLEANUP] Cleared guild commands from ${guildId}.`
+          );
+        } catch (cleanupError) {
+          console.warn(
+            `[COMMAND CLEANUP] Could not clear guild ${guildId}: ${cleanupError?.message || cleanupError}`
+          );
+        }
+      }
+
+      // Register ONLY the current BCRP command set in the target guild.
       await rest.put(
         Routes.applicationGuildCommands(
           authenticatedApplicationId,
@@ -7966,8 +7998,24 @@ async function registerCommands() {
         }
       );
 
+      // Verify Discord returned the complete command set.
+      const registered = await rest.get(
+        Routes.applicationGuildCommands(
+          authenticatedApplicationId,
+          COMMAND_GUILD_ID
+        )
+      );
+
+      const registeredNames = Array.isArray(registered)
+        ? registered.map(command => command.name)
+        : [];
+
       console.log(
-        `Successfully registered ${commands.length} guild slash commands to ${COMMAND_GUILD_ID}.`
+        `Successfully registered ${registeredNames.length} guild slash commands to ${COMMAND_GUILD_ID}.`
+      );
+
+      console.log(
+        `Registered commands: ${registeredNames.join(', ')}`
       );
 
       console.log(
